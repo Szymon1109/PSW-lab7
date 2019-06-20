@@ -19,5 +19,8 @@ public class Powiadomienie {
     private String tresc;
 
     @OneToOne
+    private Uzytkownik uzytkownik;
+
+    @OneToOne
     private Zajecia zajecia;
 }

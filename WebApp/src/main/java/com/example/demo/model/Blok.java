@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,5 +19,5 @@ public class Blok {
     private String nazwa;
 
     @OneToMany
-    private Zajecia zajecia;
+    private List<Zajecia> zajecia;
 }
