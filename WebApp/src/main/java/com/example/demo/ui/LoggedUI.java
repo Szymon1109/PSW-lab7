@@ -3,14 +3,15 @@ package com.example.demo.ui;
 import com.example.demo.model.*;
 
 import com.example.demo.repository.*;
+import com.google.common.hash.Hashing;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class LoggedUI extends VerticalLayout {
@@ -29,11 +30,13 @@ public class LoggedUI extends VerticalLayout {
     private Button zarzadzanieZgodami;
     private Button zarzadzanieBlokami;
     private Button zarzadzanieZajeciami;
+    private Button zarzadzanieProwadzacymi;
 
     private VerticalLayout utworzKursLayout;
     private VerticalLayout zgodyLayout;
     private VerticalLayout zarzadzanieBlokamiLayout;
     private VerticalLayout zarzadzanieZajeciamiLayout;
+    private VerticalLayout zarzadzanieProwadzacymiLayout;
 
     private List<Kurs> listaKursow;
     private List<Uzytkownik> listaUzytkownikow;
@@ -59,15 +62,22 @@ public class LoggedUI extends VerticalLayout {
 
         if(uzytkownik.getTyp().equals(Typ.ADMIN)) {
             listaKursow = kursRepozytorium.findAll();
+
             listaUzytkownikow = uzytkownikRepozytorium.findAll()
                     .stream()
                     .filter(u -> u.getTyp() == Typ.UCZESTNIK)
+                    .collect(Collectors.toList());
+
+            listaProwadzacych = uzytkownikRepozytorium.findAll()
+                    .stream()
+                    .filter(u -> u.getTyp() == Typ.PROWADZACY)
                     .collect(Collectors.toList());
 
             initKursyLayout();
             initZgodaLayout();
             initBlokiLayout();
             initZajeciaLayout();
+            initProwadzacyLayout();
 
             utworzKurs = new Button("Kursy");
             utworzKurs.addClickListener(event -> {
@@ -93,8 +103,14 @@ public class LoggedUI extends VerticalLayout {
                 verticalLayout.addComponent(zarzadzanieZajeciamiLayout);
             });
 
+            zarzadzanieProwadzacymi = new Button("Prowadzący");
+            zarzadzanieProwadzacymi.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(zarzadzanieProwadzacymiLayout);
+            });
+
             utworzKurs.click();
-            horizontalLayout.addComponents(utworzKurs, zarzadzanieZgodami, zarzadzanieBlokami, zarzadzanieZajeciami);
+            horizontalLayout.addComponents(utworzKurs, zarzadzanieZgodami, zarzadzanieBlokami, zarzadzanieZajeciami, zarzadzanieProwadzacymi);
             addComponents(horizontalLayout, verticalLayout);
         }
     }
@@ -215,7 +231,11 @@ public class LoggedUI extends VerticalLayout {
                 Blok blok = blokGrid.getSelectedItems().iterator().next();
                 listaBlokow.remove(blok);
                 provider.refreshAll();
-                kursRepozytorium.deleteAllByBlok(blok);
+
+                List<Blok> currentList = kursComboBox.getValue().getBlok();
+                currentList.remove(blok);
+                kursComboBox.getValue().setBlok(currentList);
+
                 blokRepozytorium.delete(blok);
                 Notification.show("Usunięto blok", "", Notification.Type.HUMANIZED_MESSAGE);
             }
@@ -284,11 +304,11 @@ public class LoggedUI extends VerticalLayout {
                 listaZajec.remove(zajecia);
                 provider.refreshAll();
 
-                List<Blok> listaBlokow = blokRepozytorium.findAllByZajecia(zajecia);
-                listaBlokow.forEach(blok ->
-                        kursRepozytorium.deleteAllByBlok(blok));
+                List<Zajecia> currentList = blokComboBox.getValue().getZajecia();
+                currentList.remove(zajecia);
+                blokComboBox.getValue().setZajecia(currentList);
 
-                blokRepozytorium.deleteAllByZajecia(zajecia);
+                zajeciaRepozytorium.delete(zajecia);
 
                 Notification.show("Usunięto zajęcia", "", Notification.Type.HUMANIZED_MESSAGE);
             }
@@ -297,11 +317,6 @@ public class LoggedUI extends VerticalLayout {
         Label label = new Label();
         TextField nazwaZajec = new TextField("Temat zajęć");
         DateField dataField = new DateField("Data zajęć");
-
-        listaProwadzacych = uzytkownikRepozytorium.findAll()
-                .stream()
-                .filter(u -> u.getTyp() == Typ.PROWADZACY)
-                .collect(Collectors.toList());
 
         ComboBox<Uzytkownik> prowadzacyComboBox = new ComboBox<>("Wybierz prowadzącego");
         prowadzacyComboBox.setEmptySelectionAllowed(false);
@@ -334,5 +349,86 @@ public class LoggedUI extends VerticalLayout {
 
         //TODO:
         //update zajęcia
+    }
+
+    private void initProwadzacyLayout(){
+        zarzadzanieProwadzacymiLayout = new VerticalLayout();
+
+        TextField imieTextField = new TextField("Imię");
+        TextField nazwiskoTextField = new TextField("Nazwisko");
+        TextField loginTextField = new TextField("Login");
+        PasswordField hasloField = new PasswordField("Hasło");
+
+        Button addUzytkownik = new Button("Dodaj");
+
+        addUzytkownik.addClickListener(event -> {
+            String imieText = imieTextField.getValue();
+            String nazwiskoText = nazwiskoTextField.getValue();
+            String loginText = loginTextField.getValue();
+            String hasloText = hasloField.getValue();
+
+            if (imieText.length() > 3 && nazwiskoText.length() > 3 && loginText.length() > 3) {
+                if (hasloText.length() > 5 && hasloText.length() < 20) {
+                    if (sprawdzHaslo(hasloText)) {
+                        if (!uzytkownikRepozytorium.findAllLogins().contains(loginText)) {
+
+                            Uzytkownik uzytkownik = new Uzytkownik(0L, loginText,
+                                    Hashing.sha512().hashString(hasloText, StandardCharsets.UTF_8).toString(),
+                                    Typ.PROWADZACY, imieText, nazwiskoText, 0);
+
+                            uzytkownikRepozytorium.save(uzytkownik);
+
+                            imieTextField.setValue("");
+                            nazwiskoTextField.setValue("");
+                            loginTextField.setValue("");
+                            hasloField.setValue("");
+
+                            Notification.show("Dodano prowadzącego!", "", Notification.Type.HUMANIZED_MESSAGE);
+                        } else
+                            Notification.show("Podany login już istnieje!", "", Notification.Type.ERROR_MESSAGE);
+                    } else
+                        Notification.show("Hasło musi składać się z conajmniej: 1 małej litery, 1 dużej litery i 1 cyfry!",
+                                "", Notification.Type.ERROR_MESSAGE);
+                } else
+                    Notification.show("Hasło musi składać się z conajmniej 6 znaków!", "", Notification.Type.ERROR_MESSAGE);
+
+            } else
+                Notification.show("Dane muszą składać się z conajmniej 4 znaków!", "", Notification.Type.ERROR_MESSAGE);
+        });
+
+        zarzadzanieProwadzacymiLayout.addComponents(imieTextField, nazwiskoTextField, loginTextField, hasloField, addUzytkownik);
+
+        Label emptyLabel = new Label();
+        ComboBox<Uzytkownik> uzytkownikComboBox = new ComboBox<>("Wybierz użytkownika do usunięcia");
+        uzytkownikComboBox.setEmptySelectionAllowed(false);
+        uzytkownikComboBox.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
+        uzytkownikComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
+        uzytkownikComboBox.setWidth("250");
+
+        Button deleteButton = new Button("Usuń");
+        deleteButton.addClickListener(event1 -> {
+            if (uzytkownikComboBox.getValue() != null) {
+                Uzytkownik uzytkownik = uzytkownikComboBox.getValue();
+                listaProwadzacych.remove(uzytkownik);
+
+                List<Zajecia> zajecia = zajeciaRepozytorium.findAllByProwadzacy(uzytkownik);
+                zajecia.forEach(z -> z.setProwadzacy(null));
+
+                uzytkownikRepozytorium.delete(uzytkownik);
+                Notification.show("Prowadzący został usunięty!", "", Notification.Type.HUMANIZED_MESSAGE);
+
+            } else
+                Notification.show("Nie wybrano prowadzącego!", "", Notification.Type.ERROR_MESSAGE);
+        });
+
+        utworzKursLayout.addComponents(emptyLabel, uzytkownikComboBox, deleteButton);
+    }
+
+    private boolean sprawdzHaslo(String haslo) {
+        final String patternString = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,20})";
+        Pattern pattern = Pattern.compile(patternString);
+        Matcher matcher = pattern.matcher(haslo);
+
+        return matcher.matches();
     }
 }
