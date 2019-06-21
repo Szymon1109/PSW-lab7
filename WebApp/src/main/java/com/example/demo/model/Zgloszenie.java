@@ -17,6 +17,7 @@ public class Zgloszenie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDateTime data;
+    private Boolean zgoda;
 
     @OneToOne
     private Uzytkownik uczestnik;

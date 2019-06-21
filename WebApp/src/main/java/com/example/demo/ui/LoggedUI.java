@@ -12,159 +12,176 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoggedUI extends VerticalLayout {
-    private UserRepository userRepository;
-    private ProjectRepository projectRepository;
-    private ProjectParticipationRepository projectParticipationRepository;
-    private TaskRepository taskRepository;
-    private SprintRepository sprintRepository;
 
-    private User user;
+    private BlokRepozytorium blokRepozytorium;
+    private KursRepozytorium kursRepozytorium;
+    private PowiadomienieRepozytorium powiadomienieRepozytorium;
+    private UzytkownikRepozytorium uzytkownikRepozytorium;
+    private ZajeciaRepozytorium zajeciaRepozytorium;
+    private ZgloszenieRepozytorium zgloszenieRepozytorium;
+
+    private Uzytkownik uzytkownik;
     private HorizontalLayout horizontalLayout;
     private VerticalLayout verticalLayout;
-    private Button createProjectButton;
-    private Button sendInvitationToProject;
-    private Button manageSprintsButton;
-    private Button manageTasksButton;
-    private Button informationProjectButton;
+    private Button utworzKurs;
+    private Button zarzadzanieZgodami;
+    private Button zarzadzanieBlokami;
+    private Button zarzadzanieZajeciami;
 
-    private VerticalLayout createProjectLayout;
-    private VerticalLayout sendInvitationLayout;
-    private VerticalLayout manageSprintLayout;
-    private VerticalLayout manageTaskLayout;
-    private VerticalLayout informationProjectLayout;
+    private VerticalLayout utworzKursLayout;
+    private VerticalLayout zgodyLayout;
+    private VerticalLayout zarzadzanieBlokamiLayout;
+    private VerticalLayout zarzadzanieZajeciamiLayout;
 
-    private List<Project> allProjectList;
-    private ListDataProvider<Project> projectsAdministratorProvider;
-    private ListDataProvider<Project> allProjectsProvider;
-    private ListDataProvider<Project> projectsUserParticipationProvider;
+    private List<Kurs> listaKursow;
+    private List<Uzytkownik> listaUzytkownikow;
+    private ListDataProvider<Kurs> projectsUserParticipationProvider;
 
-    public LoggedUI(User user, UserRepository userRepository, ProjectRepository projectRepository, ProjectParticipationRepository
-            projectParticipationRepository, TaskRepository taskRepository, SprintRepository sprintRepository) {
-        this.user = user;
-        this.userRepository = userRepository;
-        this.projectRepository = projectRepository;
-        this.projectParticipationRepository = projectParticipationRepository;
-        this.taskRepository = taskRepository;
-        this.sprintRepository = sprintRepository;
+    public LoggedUI(Uzytkownik uzytkownik, BlokRepozytorium blokRepozytorium, KursRepozytorium kursRepozytorium,
+                    PowiadomienieRepozytorium powiadomienieRepozytorium, UzytkownikRepozytorium uzytkownikRepozytorium,
+                    ZajeciaRepozytorium zajeciaRepozytorium, ZgloszenieRepozytorium zgloszenieRepozytorium) {
+
+        this.uzytkownik = uzytkownik;
+        this.blokRepozytorium = blokRepozytorium;
+        this.kursRepozytorium = kursRepozytorium;
+        this.powiadomienieRepozytorium = powiadomienieRepozytorium;
+        this.uzytkownikRepozytorium = uzytkownikRepozytorium;
+        this.zajeciaRepozytorium = zajeciaRepozytorium;
+        this.zgloszenieRepozytorium = zgloszenieRepozytorium;
+
         horizontalLayout = new HorizontalLayout();
         verticalLayout = new VerticalLayout();
 
-        allProjectList = projectRepository.findAll();
+        if(uzytkownik.getTyp().equals(Typ.ADMIN)) {
+            listaKursow = kursRepozytorium.findAll();
+            listaUzytkownikow = uzytkownikRepozytorium.findAll();
 
-        allProjectsProvider = DataProvider.ofCollection(allProjectList);
-        allProjectsProvider.setSortComparator((o1, o2) -> o1.getName().compareTo(o2.getName()));
+            /*projectsUserParticipationProvider = DataProvider.ofCollection(listaKursow);
+            projectsUserParticipationProvider.setFilter(project -> projectParticipationRepository
+                    .findAllByUserAndProject(user, project)
+                    .size() > 0
+            );
+            projectsUserParticipationProvider.setSortComparator((o1, o2) -> o1.getName().compareTo(o2.getName()));*/
 
-        projectsAdministratorProvider = DataProvider.ofCollection(allProjectList);
-        projectsAdministratorProvider.setFilter(project -> project.getLeaderUser().equals(user));
-        projectsAdministratorProvider.setSortComparator((o1, o2) -> o1.getName().compareTo(o2.getName()));
+            initKursyLayout();
+            initZgodaLayout();
+            initBlokiLayout();
+            initZajeciaLayout();
 
-        projectsUserParticipationProvider = DataProvider.ofCollection(allProjectList);
-        projectsUserParticipationProvider.setFilter(project -> projectParticipationRepository
-                .findAllByUserAndProject(user, project)
-                .size() > 0
-        );
-        projectsUserParticipationProvider.setSortComparator((o1, o2) -> o1.getName().compareTo(o2.getName()));
+            utworzKurs = new Button("Kursy");
+            utworzKurs.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(utworzKursLayout);
+            });
 
-        initCreateProjectLayout();
-        initSendInvitationLayout();
-        initManageSprintsLayout();
-        initManageTaskLayout();
-        initInformationProjectLayout();
+            zarzadzanieZgodami = new Button("Zgody");
+            zarzadzanieZgodami.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(zgodyLayout);
+            });
 
-        createProjectButton = new Button("Create project");
-        createProjectButton.addClickListener(event -> {
-            verticalLayout.removeAllComponents();
-            verticalLayout.addComponent(createProjectLayout);
-        });
+            zarzadzanieBlokami = new Button("Bloki");
+            zarzadzanieBlokami.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(zarzadzanieBlokamiLayout);
+            });
 
-        sendInvitationToProject = new Button("Send invitation");
-        sendInvitationToProject.addClickListener(event -> {
-            verticalLayout.removeAllComponents();
-            verticalLayout.addComponent(sendInvitationLayout);
-        });
+            zarzadzanieZajeciami = new Button("Zajęcia");
+            zarzadzanieZajeciami.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(zarzadzanieZajeciamiLayout);
+            });
 
-        manageSprintsButton = new Button("Manage sprints");
-        manageSprintsButton.addClickListener(event -> {
-            verticalLayout.removeAllComponents();
-            verticalLayout.addComponent(manageSprintLayout);
-        });
-
-        manageTasksButton = new Button("Manage taks");
-        manageTasksButton.addClickListener(event -> {
-            verticalLayout.removeAllComponents();
-            verticalLayout.addComponent(manageTaskLayout);
-        });
-
-        informationProjectButton = new Button("Project informations");
-        informationProjectButton.addClickListener(event -> {
-            verticalLayout.removeAllComponents();
-            verticalLayout.addComponent(informationProjectLayout);
-        });
-
-        createProjectButton.click();
-        horizontalLayout.addComponents(createProjectButton, sendInvitationToProject, manageSprintsButton, manageTasksButton, informationProjectButton);
-        addComponents(horizontalLayout, verticalLayout);
+            utworzKurs.click();
+            horizontalLayout.addComponents(utworzKurs, zarzadzanieZgodami, zarzadzanieBlokami, zarzadzanieZajeciami);
+            addComponents(horizontalLayout, verticalLayout);
+        }
     }
 
-    private void initCreateProjectLayout() {
-        createProjectLayout = new VerticalLayout();
-        TextField nameProject = new TextField("Name");
-        TextField descriptionProject = new TextField("Description");
-        Button createButton = new Button("Create");
+    private void initKursyLayout() {
+        utworzKursLayout = new VerticalLayout();
+        TextField nameProject = new TextField("Nazwa");
+        Button createButton = new Button("Utwórz");
+
         createButton.addClickListener(event1 -> {
-            if (projectRepository.findAllByName(nameProject.getValue()).isEmpty()) {
-                Project project = projectRepository.save(
-                        new Project(0L, nameProject.getValue(), descriptionProject.getValue(), user));
-                projectParticipationRepository.save(
-                        new ProjectParticipation(0L, project, user));
-                allProjectList.add(project);
-                allProjectsProvider.refreshItem(project);
-                projectsAdministratorProvider.refreshItem(project);
-                projectsUserParticipationProvider.refreshItem(project);
-                Notification.show("Project has been created", "",
-                        Notification.Type.HUMANIZED_MESSAGE);
-            } else {
-                Notification.show("Project with this name already exists!", "",
-                        Notification.Type.ERROR_MESSAGE);
-            }
+            if (kursRepozytorium.findAllByNazwa(nameProject.getValue()).isEmpty()) {
+                Kurs kurs = kursRepozytorium.save(
+                        new Kurs(0L, nameProject.getValue(), null));
+
+                listaKursow.add(kurs);
+                Notification.show("Utworzono kurs", "", Notification.Type.HUMANIZED_MESSAGE);
+
+            } else
+                Notification.show("Kurs o podanej nazwie istnieje!", "", Notification.Type.ERROR_MESSAGE);
         });
-        createProjectLayout.addComponents(nameProject, descriptionProject, createButton);
+
+        utworzKursLayout.addComponents(nameProject, createButton);
+
+        Label emptyLabel = new Label();
+        ComboBox<Kurs> kursComboBox = new ComboBox<>("Wybierz kurs do usunięcia");
+        kursComboBox.setEmptySelectionAllowed(false);
+        kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
+        kursComboBox.setItemCaptionGenerator(Kurs::getNazwa);
+        kursComboBox.setWidth("250");
+
+        Button deleteKursButton = new Button("Usuń");
+        deleteKursButton.addClickListener(event1 -> {
+            if (kursComboBox.getValue() != null) {
+                kursRepozytorium.delete(kursComboBox.getValue());
+                Notification.show("Kurs został usunięty!", "", Notification.Type.HUMANIZED_MESSAGE);
+
+            } else
+                Notification.show("Nie wybrano kursu!", "", Notification.Type.ERROR_MESSAGE);
+        });
+
+        utworzKursLayout.addComponents(emptyLabel, kursComboBox, deleteKursButton);
+
+        //TODO:
+        //update kursy
     }
 
-    private void initSendInvitationLayout() {
-        sendInvitationLayout = new VerticalLayout();
-        ComboBox<Project> projectComboBox = new ComboBox<>("Choose project");
-        projectComboBox.setEmptySelectionAllowed(false);
-        projectComboBox.setDataProvider(projectsAdministratorProvider);
-        projectComboBox.setItemCaptionGenerator(Project::getName);
-        projectComboBox.setWidth("250");
+    private void initZgodaLayout() {
+        zgodyLayout = new VerticalLayout();
 
-        ComboBox<User> userComboBox = new ComboBox<>("Choose user");
-        userComboBox.setEmptySelectionAllowed(false);
-        userComboBox.setItemCaptionGenerator(User::getEmail);
-        userComboBox.setWidth("250");
-        projectComboBox.addValueChangeListener(event1 ->
-                userComboBox.setItems(userRepository.findAll().stream().filter(user1 ->
-                        projectParticipationRepository.findAllByUserAndProject(user1, event1.getValue()).size() == 0))
-        );
+        ComboBox<Uzytkownik> uzytkownikComboBox = new ComboBox<>("Wybierz użytkownika");
+        uzytkownikComboBox.setEmptySelectionAllowed(false);
+        uzytkownikComboBox.setDataProvider(DataProvider.ofCollection(listaUzytkownikow));
+        uzytkownikComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
+        uzytkownikComboBox.setWidth("250");
 
-        Button sendInvitationButton = new Button("Send");
-        sendInvitationButton.addClickListener(event1 -> {
-            if (projectComboBox.getValue() != null && userComboBox.getValue() != null) {
-                projectParticipationRepository.save(
-                        new ProjectParticipation(0L, projectComboBox.getValue(), userComboBox.getValue()));
-                Notification.show("Invitation has been sent", "",
-                        Notification.Type.HUMANIZED_MESSAGE);
-            } else {
-                Notification.show("Field is empty", "",
-                        Notification.Type.ERROR_MESSAGE);
-            }
+        List<Zgloszenie> zgloszenia = zgloszenieRepozytorium.findAllByUczestnik(uzytkownikComboBox.getValue());
+        zgloszenia.stream().filter(z -> z.getZgoda() == null);
+
+        ComboBox<Zgloszenie> zgloszenieComboBox = new ComboBox<>("Wybierz zgłoszenie");
+        zgloszenieComboBox.setEmptySelectionAllowed(false);
+        zgloszenieComboBox.setItemCaptionGenerator(Zgloszenie::toString);
+        zgloszenieComboBox.setWidth("250");
+        uzytkownikComboBox.addValueChangeListener(event -> zgloszenieComboBox.setItems(zgloszenia));
+
+        Button potwierdz = new Button("Potwierdź");
+        potwierdz.addClickListener(event1 -> {
+            if (zgloszenieComboBox.getValue() != null) {
+                zgloszenieComboBox.getValue().setZgoda(true);
+                Notification.show("Potwierdzono zgłoszenie!", "", Notification.Type.HUMANIZED_MESSAGE);
+            } else
+                Notification.show("Nie wybrano zgłoszenia!", "", Notification.Type.ERROR_MESSAGE);
         });
-        sendInvitationLayout.addComponents(projectComboBox, userComboBox, sendInvitationButton);
+
+        Button odrzuc = new Button("Odrzuć");
+        potwierdz.addClickListener(event1 -> {
+            if (zgloszenieComboBox.getValue() != null) {
+                zgloszenieComboBox.getValue().setZgoda(false);
+                Notification.show("Odrzucono zgłoszenie!", "", Notification.Type.HUMANIZED_MESSAGE);
+            } else
+                Notification.show("Nie wybrano zgłoszenia!", "", Notification.Type.ERROR_MESSAGE);
+        });
+
+        horizontalLayout.addComponents(potwierdz, odrzuc);
+        zgodyLayout.addComponents(uzytkownikComboBox, zgloszenieComboBox, horizontalLayout);
     }
 
-    private void initManageSprintsLayout() {
-        manageSprintLayout = new VerticalLayout();
+    private void initBlokiLayout() {
+        zarzadzanieBlokamiLayout = new VerticalLayout();
         ComboBox<Project> projectComboBox = new ComboBox<>("Choose project");
         projectComboBox.setEmptySelectionAllowed(false);
         projectComboBox.setDataProvider(projectsAdministratorProvider);
@@ -232,13 +249,13 @@ public class LoggedUI extends VerticalLayout {
                 Notification.show("Sprint has been deleted", "",
                         Notification.Type.HUMANIZED_MESSAGE);
             }
-        });
-        horizontalLayout.addComponents(deleteButton, addButton);
-        manageSprintLayout.addComponents(projectComboBox, sprintGrid, horizontalLayout, fromDateField, toDateField, storyPointsPlannedTextField);
+        });horizontalLayout.addComponents(deleteButton, addButton);
+
+        zarzadzanieBlokamiLayout.addComponents(projectComboBox, sprintGrid, horizontalLayout, fromDateField, toDateField, storyPointsPlannedTextField);
     }
 
-    private void initManageTaskLayout() {
-        manageTaskLayout = new VerticalLayout();
+    private void initZajeciaLayout() {
+        zarzadzanieZajeciamiLayout = new VerticalLayout();
         ComboBox<Project> projectComboBox = new ComboBox<>("Select project");
         projectComboBox.setEmptySelectionAllowed(true);
         projectComboBox.setDataProvider(projectsUserParticipationProvider);
@@ -361,11 +378,11 @@ public class LoggedUI extends VerticalLayout {
         findTasksHorizontalLayout.addComponents(projectComboBox, sprintComboBox, findByNameTextField);
         HorizontalLayout addTasksHorizontalLayout = new HorizontalLayout();
         addTasksHorizontalLayout.addComponents(chooseToAddTaskButton, chooseToEditProgressButton);
-        manageTaskLayout.addComponents(findTasksHorizontalLayout, taskGrid, addTasksHorizontalLayout, verticalLayout);
+        zarzadzanieZajeciamiLayout.addComponents(findTasksHorizontalLayout, taskGrid, addTasksHorizontalLayout, verticalLayout);
     }
 
     private void initInformationProjectLayout() {
-        informationProjectLayout = new VerticalLayout();
+        informacjeOKursieLayout = new VerticalLayout();
         ComboBox<Project> projectComboBox = new ComboBox<>("Projects");
         projectComboBox.setEmptySelectionAllowed(true);
         projectComboBox.setDataProvider(allProjectsProvider);
@@ -424,7 +441,7 @@ public class LoggedUI extends VerticalLayout {
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.addComponents(projectComboBox, sprintComboBox, progressBar);
-        informationProjectLayout.addComponents(horizontalLayout, userComboBox, taskGrid);
+        informacjeOKursieLayout.addComponents(horizontalLayout, userComboBox, taskGrid);
     }
 
 }

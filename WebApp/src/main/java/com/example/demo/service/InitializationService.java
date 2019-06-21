@@ -79,11 +79,11 @@ public class InitializationService {
         k1 = kursRepozytorium.save(k1);
         k2 = kursRepozytorium.save(k2);
 
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 20, 10, 0, 0), u1, k1));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 21, 10, 0, 0), u1, k2));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 22, 10, 0, 0), u2, k1));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 23, 10, 0, 0), u3, k2));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 24, 10, 0, 0), u4, k2));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 20, 10, 0, 0), null, u1, k1));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 21, 10, 0, 0), null, u1, k2));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 22, 10, 0, 0), null, u2, k1));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 23, 10, 0, 0), null, u3, k2));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 24, 10, 0, 0), null, u4, k2));
 
         powiadomienieRepozytorium.save(new Powiadomienie(0L, "Powiadomienie", "Niedlugo pierwsze zajecia z kursu", u1, z1));
         powiadomienieRepozytorium.save(new Powiadomienie(0L, "Powiadomienie", "Niedlugo pierwsze zajecia z kursu", u1, z5));

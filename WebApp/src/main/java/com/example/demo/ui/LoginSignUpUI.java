@@ -93,10 +93,10 @@ public class LoginSignUpUI extends UI {
 
                                 uzytkownikRepozytorium.save(uzytkownik);
 
-                                imieTextField.setValue(null);
-                                nazwiskoTextField.setValue(null);
-                                loginTextField.setValue(null);
-                                hasloField.setValue(null);
+                                imieTextField.setValue("");
+                                nazwiskoTextField.setValue("");
+                                loginTextField.setValue("");
+                                hasloField.setValue("");
 
                                 Notification.show("Rejestracja udana!", "", Notification.Type.HUMANIZED_MESSAGE);
                             } else
@@ -131,8 +131,8 @@ public class LoginSignUpUI extends UI {
                         Notification.show("Logowanie udane!", "", Notification.Type.HUMANIZED_MESSAGE);
 
                         root.removeAllComponents();
-//                        root.addComponent(new LoggedUI(uzytkownik.get(), blokRepozytorium, kursRepozytorium,
-//                                powiadomienieRepozytorium, uzytkownikRepozytorium, zajeciaRepozytorium, zgloszenieRepozytorium);
+                        root.addComponent(new LoggedUI(uzytkownik.get(), blokRepozytorium, kursRepozytorium,
+                                powiadomienieRepozytorium, uzytkownikRepozytorium, zajeciaRepozytorium, zgloszenieRepozytorium));
 
                         Button wyloguj = new Button("Wyloguj");
                         wyloguj.addClickListener(event1 -> {
