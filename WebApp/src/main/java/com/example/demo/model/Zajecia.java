@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class Zajecia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String temat;
-    private LocalDateTime data;
+    private LocalDate data;
 
     @ManyToOne
     private Uzytkownik prowadzacy;

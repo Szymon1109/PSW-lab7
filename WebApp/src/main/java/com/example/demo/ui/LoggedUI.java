@@ -8,8 +8,10 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LoggedUI extends VerticalLayout {
 
@@ -35,6 +37,7 @@ public class LoggedUI extends VerticalLayout {
 
     private List<Kurs> listaKursow;
     private List<Uzytkownik> listaUzytkownikow;
+    private List<Uzytkownik> listaProwadzacych;
     private List<Zgloszenie> zgloszenia;
     private List<Blok> listaBlokow;
     private List<Zajecia> listaZajec;
@@ -56,14 +59,10 @@ public class LoggedUI extends VerticalLayout {
 
         if(uzytkownik.getTyp().equals(Typ.ADMIN)) {
             listaKursow = kursRepozytorium.findAll();
-            listaUzytkownikow = uzytkownikRepozytorium.findAll();
-
-            /*projectsUserParticipationProvider = DataProvider.ofCollection(listaKursow);
-            projectsUserParticipationProvider.setFilter(project -> projectParticipationRepository
-                    .findAllByUserAndProject(user, project)
-                    .size() > 0
-            );
-            projectsUserParticipationProvider.setSortComparator((o1, o2) -> o1.getName().compareTo(o2.getName()));*/
+            listaUzytkownikow = uzytkownikRepozytorium.findAll()
+                    .stream()
+                    .filter(u -> u.getTyp() == Typ.UCZESTNIK)
+                    .collect(Collectors.toList());
 
             initKursyLayout();
             initZgodaLayout();
@@ -153,8 +152,10 @@ public class LoggedUI extends VerticalLayout {
         uzytkownikComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
         uzytkownikComboBox.setWidth("250");
 
-        zgloszenia = zgloszenieRepozytorium.findAllByUczestnik(uzytkownikComboBox.getValue());
-        zgloszenia.stream().filter(z -> z.getZgoda() == null);
+        zgloszenia = zgloszenieRepozytorium.findAllByUczestnik(uzytkownikComboBox.getValue())
+                .stream()
+                .filter(z -> z.getZgoda() == null)
+                .collect(Collectors.toList());
 
         ComboBox<Zgloszenie> zgloszenieComboBox = new ComboBox<>("Wybierz zgłoszenie");
         zgloszenieComboBox.setEmptySelectionAllowed(false);
@@ -208,8 +209,6 @@ public class LoggedUI extends VerticalLayout {
             provider.refreshAll();
         });
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-
         Button deleteButton = new Button("Usuń");
         deleteButton.addClickListener(event -> {
             if (!blokGrid.getSelectedItems().isEmpty()) {
@@ -248,228 +247,92 @@ public class LoggedUI extends VerticalLayout {
         });
 
         zarzadzanieBlokamiLayout.addComponents(kursComboBox, blokGrid, deleteButton, label, nazwaBloku, addButton);
+
+        //TODO:
+        //update bloki
     }
 
     private void initZajeciaLayout() {
         zarzadzanieZajeciamiLayout = new VerticalLayout();
-        ComboBox<Project> projectComboBox = new ComboBox<>("Select project");
-        projectComboBox.setEmptySelectionAllowed(true);
-        projectComboBox.setDataProvider(projectsUserParticipationProvider);
-        projectComboBox.setItemCaptionGenerator(Project::getName);
 
-        ComboBox<Sprint> sprintComboBox = new ComboBox<>("Select sprint");
-        sprintComboBox.setEmptySelectionAllowed(true);
-        sprintComboBox.setItemCaptionGenerator(item -> item.getFromLocalDate().toString() +
-                " - " + item.getToLocalDate().toString());
-        sprintComboBox.setWidth("250");
-//        if (!projects.isEmpty()) {
-//            projectComboBox.setValue(projects.get(0));
-//            sprintComboBox.setValue(sprintRepository.findAllByProject(projects.get(0))
-//                    .stream()
-//                    .filter(sprint -> !sprint.getFromLocalDate().isBefore(LocalDate.now()))
-//                    .min(Comparator.comparing(Sprint::getFromLocalDate)).orElse(new Sprint()));
-//        }
-        TextField findByNameTextField = new TextField("Find task by name");
-        Button chooseToAddTaskButton = new Button("Add task");
-        VerticalLayout verticalLayout = new VerticalLayout();
-        TextField nameTextField = new TextField("Name");
-        TextField descriptionTextField = new TextField("Description");
-        TextField wageTextField = new TextField("Wage");
-        TextField storyPointsTextField = new TextField("Story points");
-        Button saveButton = new Button("Save");
+        ComboBox<Blok> blokComboBox = new ComboBox<>("Wybierz blok");
+        blokComboBox.setEmptySelectionAllowed(false);
+        blokComboBox.setDataProvider(DataProvider.ofCollection(listaBlokow));
+        blokComboBox.setItemCaptionGenerator(Blok::getNazwa);
 
-        Button chooseToEditProgressButton = new Button("Edit progress");
-        ComboBox<Progress> progressComboBox = new ComboBox<>("Select progress");
-        progressComboBox.setEmptySelectionAllowed(false);
-        progressComboBox.setItems(Progress.values());
-        Button saveProgress = new Button("Save");
+        Grid<Zajecia> zajeciaGrid = new Grid<>();
+        zajeciaGrid.addColumn(Zajecia::getId).setCaption("ID");
+        zajeciaGrid.addColumn(Zajecia::getTemat).setCaption("Temat");
+        zajeciaGrid.addColumn(Zajecia::getData).setCaption("Data");
+        zajeciaGrid.addColumn(Zajecia::getProwadzacy).setCaption("Prowadzący");
+        zajeciaGrid.setWidth("650");
+        zajeciaGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        listaZajec = blokComboBox.getValue().getZajecia();
+        ListDataProvider<Zajecia> provider = DataProvider.ofCollection(listaZajec);
+        zajeciaGrid.setDataProvider(provider);
 
-        chooseToAddTaskButton.addClickListener(event -> {
-            verticalLayout.removeAllComponents();
-            verticalLayout.addComponents(nameTextField, descriptionTextField, wageTextField,
-                    storyPointsTextField, saveButton);
-        });
-
-        chooseToEditProgressButton.addClickListener(event -> {
-            verticalLayout.removeAllComponents();
-            verticalLayout.addComponents(progressComboBox, saveProgress);
-        });
-
-        Grid<Task> taskGrid = new Grid<>();
-        taskGrid.addColumn(Task::getName).setCaption("Name");
-        taskGrid.addColumn(Task::getDescription).setCaption("Description");
-        taskGrid.addColumn(task -> task.getUser().getName()).setCaption("User");
-        taskGrid.addColumn(Task::getProgress).setCaption("Progress");
-        taskGrid.setWidth("750");
-        taskGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-
-        List<Task> taskList = new ArrayList<>();
-        ListDataProvider<Task> provider = DataProvider.ofCollection(taskList);
-        provider.setSortComparator((o1, o2) -> o1.getProgress().getValue() - o2.getProgress().getValue());
-        taskGrid.setDataProvider(provider);
-
-        projectComboBox.addValueChangeListener(event ->
-                sprintComboBox.setItems(sprintRepository.findAllByProject(event.getValue()))
-        );
-        sprintComboBox.addValueChangeListener(event -> {
-            taskList.clear();
-            taskList.addAll(taskRepository.findAllBySprint(event.getValue()));
-            provider.refreshAll();
-        });
-        findByNameTextField.addValueChangeListener(event -> {
-            taskList.clear();
-            taskList.addAll(
-                    taskRepository.findAllByNameStartingWithIgnoreCase(event.getValue()));
+        blokComboBox.addValueChangeListener(event1 -> {
+            listaZajec.clear();
+            listaZajec.addAll(event1.getValue().getZajecia());
             provider.refreshAll();
         });
 
-        saveButton.addClickListener(event -> {
-            if (!sprintComboBox.isEmpty()) {
-                if (!nameTextField.isEmpty() && !descriptionTextField.isEmpty() &&
-                        !wageTextField.isEmpty() && !storyPointsTextField.isEmpty()) {
-                    try {
-                        Task task = taskRepository.save(
-                                new Task(0L, nameTextField.getValue(), descriptionTextField.getValue(),
-                                        sprintComboBox.getValue(), Integer.valueOf(wageTextField.getValue()),
-                                        Integer.valueOf(storyPointsTextField.getValue()), Progress.TODO, user));
-                        Sprint sprint = task.getSprint();
-                        sprint.setStoryPointsPlanned(sprint.getStoryPointsPlanned() + Integer.valueOf(storyPointsTextField.getValue()));
-                        sprintRepository.save(sprint);
-                        taskList.add(task);
-                        provider.refreshAll();
-                    } catch (NumberFormatException e) {
-                        Notification.show("Wrong number!", "",
-                                Notification.Type.ERROR_MESSAGE);
-                    }
-                } else {
-                    Notification.show("Empty field!", "",
-                            Notification.Type.ERROR_MESSAGE);
-                }
-            } else {
-                Notification.show("Select sprint from ComboBox!", "",
-                        Notification.Type.ERROR_MESSAGE);
+        Button deleteButton = new Button("Usuń");
+        deleteButton.addClickListener(event -> {
+            if (!zajeciaGrid.getSelectedItems().isEmpty()) {
+                Zajecia zajecia = zajeciaGrid.getSelectedItems().iterator().next();
+                listaZajec.remove(zajecia);
+                provider.refreshAll();
+
+                List<Blok> listaBlokow = blokRepozytorium.findAllByZajecia(zajecia);
+                listaBlokow.forEach(blok ->
+                        kursRepozytorium.deleteAllByBlok(blok));
+
+                blokRepozytorium.deleteAllByZajecia(zajecia);
+
+                Notification.show("Usunięto zajęcia", "", Notification.Type.HUMANIZED_MESSAGE);
             }
         });
 
-        saveProgress.addClickListener(event -> {
-            if (taskGrid.getSelectedItems().size() == 1) {
-                if (!progressComboBox.isEmpty()) {
-                    Task task = taskGrid.getSelectedItems().iterator().next();
-                    int index = taskList.indexOf(task);
-                    task.setProgress(progressComboBox.getValue());
-                    task = taskRepository.save(task);
-                    taskList.set(index, task);
-                    provider.refreshAll();
-                } else {
-                    Notification.show("Select progress from ComboBox!", "",
-                            Notification.Type.ERROR_MESSAGE);
-                }
-            } else {
-                Notification.show("Select one task from grid!", "",
-                        Notification.Type.ERROR_MESSAGE);
-            }
-        });
+        Label label = new Label();
+        TextField nazwaZajec = new TextField("Temat zajęć");
+        DateField dataField = new DateField("Data zajęć");
 
-        HorizontalLayout findTasksHorizontalLayout = new HorizontalLayout();
-        findTasksHorizontalLayout.addComponents(projectComboBox, sprintComboBox, findByNameTextField);
-        HorizontalLayout addTasksHorizontalLayout = new HorizontalLayout();
-        addTasksHorizontalLayout.addComponents(chooseToAddTaskButton, chooseToEditProgressButton);
-        zarzadzanieZajeciamiLayout.addComponents(findTasksHorizontalLayout, taskGrid, addTasksHorizontalLayout, verticalLayout);
+        listaProwadzacych = uzytkownikRepozytorium.findAll()
+                .stream()
+                .filter(u -> u.getTyp() == Typ.PROWADZACY)
+                .collect(Collectors.toList());
 
-        DateField fromDateField = new DateField("Select start of sprint");
-        fromDateField.setValue(LocalDate.now());
-        fromDateField.setTextFieldEnabled(false);
-        DateField toDateField = new DateField("Select end of sprint");
-        toDateField.setValue(LocalDate.now().plusDays(7L));
-        toDateField.setTextFieldEnabled(false);
-        TextField storyPointsPlannedTextField = new TextField("Planned story points");
+        ComboBox<Uzytkownik> prowadzacyComboBox = new ComboBox<>("Wybierz prowadzącego");
+        prowadzacyComboBox.setEmptySelectionAllowed(false);
+        prowadzacyComboBox.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
+        prowadzacyComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
 
-        /*Button addButton = new Button("Dodaj zajecia");
+        Button addButton = new Button("Dodaj zajęcia");
         addButton.addClickListener(event -> {
-            try {
-                if (toDateField.getValue().isAfter(fromDateField.getValue())) {
-                    if (sprintRepository.findAllByProject(projectComboBox.getValue()).stream().allMatch(sprint ->
-                            fromDateField.getValue().isAfter(sprint.getToLocalDate()) || toDateField.getValue().isBefore(sprint.getFromLocalDate()))) {
-                        Sprint sprint = sprintRepository.save(new Sprint(0L, fromDateField.getValue(),
-                                toDateField.getValue(), Integer.valueOf(storyPointsPlannedTextField.getValue()), projectComboBox.getValue()));
-                        sprintList.add(sprint);
-                        provider.refreshAll();
-                    } else {
-                        Notification.show("Sprint will overlap with other!", "",
-                                Notification.Type.ERROR_MESSAGE);
-                    }
-                } else {
-                    Notification.show("Wrong dates!", "",
-                            Notification.Type.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException e) {
-                Notification.show("Wrong number of planned story points", "",
-                        Notification.Type.ERROR_MESSAGE);
-            }
-        });*/
-    }
+            if (nazwaZajec.getValue() != null && dataField.getValue() != null && prowadzacyComboBox.getValue() != null) {
+                if (zajeciaRepozytorium.findAllByNazwa(nazwaZajec.getValue()).isEmpty()) {
 
-    private void initInformationProjectLayout() {
-        informacjeOKursieLayout = new VerticalLayout();
-        ComboBox<Project> projectComboBox = new ComboBox<>("Projects");
-        projectComboBox.setEmptySelectionAllowed(true);
-        projectComboBox.setDataProvider(allProjectsProvider);
-        projectComboBox.setItemCaptionGenerator(Project::getName);
+                    Zajecia zajecia = zajeciaRepozytorium.save(
+                            new Zajecia(0L, nazwaZajec.getValue(), dataField.getValue(), prowadzacyComboBox.getValue()));
 
-        ComboBox<Sprint> sprintComboBox = new ComboBox<>("Sprint");
-        sprintComboBox.setEmptySelectionAllowed(true);
-        sprintComboBox.setItemCaptionGenerator(item -> item.getFromLocalDate().toString() +
-                " - " + item.getToLocalDate().toString());
-        sprintComboBox.setWidth("250");
+                    List<Zajecia> currentList = blokComboBox.getValue().getZajecia();
+                    currentList.add(zajecia);
+                    blokComboBox.getValue().setZajecia(currentList);
 
-        ProgressBar progressBar = new ProgressBar(0.0F);
-        progressBar.setCaption("Story points");
-        progressBar.setWidth("150px");
+                    listaZajec.add(zajecia);
+                    provider.refreshAll();
+                    Notification.show("Utworzono zajęcia", "", Notification.Type.HUMANIZED_MESSAGE);
 
-        ComboBox<User> userComboBox = new ComboBox<>("Users");
-        userComboBox.setEmptySelectionAllowed(true);
-        userComboBox.setItemCaptionGenerator(User::getName);
-
-        Grid<Task> taskGrid = new Grid<>();
-        taskGrid.addColumn(Task::getName).setCaption("Name");
-        taskGrid.addColumn(Task::getDescription).setCaption("Description").setWidth(200.0);
-        taskGrid.addColumn(Task::getWage).setCaption("Wage");
-        taskGrid.addColumn(Task::getStoryPoints).setCaption("Story points");
-        taskGrid.addColumn(Task::getProgress).setCaption("Progress");
-        taskGrid.setWidth("750");
-        taskGrid.setHeight("300");
-        taskGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-
-        projectComboBox.addValueChangeListener(event -> {
-            sprintComboBox.setItems(sprintRepository.findAllByProject(event.getValue()));
-            userComboBox.setItems(
-                    projectParticipationRepository.findAllByProject(event.getValue())
-                            .stream()
-                            .map(ProjectParticipation::getUser)
-                            .distinct()
-            );
+                } else
+                    Notification.show("Zajęcia o podanej nazwie istnieją!", "", Notification.Type.ERROR_MESSAGE);
+            } else
+                Notification.show("Nie wybrano wszystkich danych!", "", Notification.Type.ERROR_MESSAGE);
         });
 
-        sprintComboBox.addValueChangeListener(event -> {
-            if (event.getValue() != null) {
-                float doneStoryPoints = taskRepository.findAllBySprintAndAndProgress(sprintComboBox.getValue(), Progress.DONE).stream().mapToInt(Task::getStoryPoints).sum();
-                float plannedStoryPoints = sprintComboBox.getValue().getStoryPointsPlanned();
-                progressBar.setValue(doneStoryPoints / plannedStoryPoints);
-            } else {
-                progressBar.setValue(0.0F);
-            }
-        });
+        zarzadzanieBlokamiLayout.addComponents(blokComboBox, zajeciaGrid, deleteButton, label, nazwaZajec, dataField, prowadzacyComboBox, addButton);
 
-        userComboBox.addValueChangeListener(event -> taskGrid.setItems(
-                taskRepository.findAllByUser(event.getValue())
-                        .stream()
-                        .filter(task -> task.getSprint()
-                                .getProject().equals(projectComboBox.getValue()))
-        ));
-
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.addComponents(projectComboBox, sprintComboBox, progressBar);
-        informacjeOKursieLayout.addComponents(horizontalLayout, userComboBox, taskGrid);
+        //TODO:
+        //update zajęcia
     }
-
 }

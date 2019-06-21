@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Arrays;
 
 @Service
@@ -51,12 +51,12 @@ public class InitializationService {
         u5 = uzytkownikRepozytorium.save(u5);
         u6 = uzytkownikRepozytorium.save(u6);
 
-        Zajecia z1 = new Zajecia(0L, "Speaking and listening in English", LocalDateTime.of(2019, 7, 1, 12, 30, 0), u5);
-        Zajecia z2 = new Zajecia(0L, "Reading and writing in English", LocalDateTime.of(2019, 7, 2, 12, 30, 0), u5);
-        Zajecia z3 = new Zajecia(0L, "Deutsch sprechen und zuhoren", LocalDateTime.of(2019, 7, 4, 12, 30, 0), u5);
-        Zajecia z4 = new Zajecia(0L, "Deutsch lesen und schreiben", LocalDateTime.of(2019, 7, 5, 12, 30, 0), u5);
-        Zajecia z5 = new Zajecia(0L, "Inzynieria oprogramowania", LocalDateTime.of(2019, 7, 8, 10, 0, 0), u6);
-        Zajecia z6 = new Zajecia(0L, "Podstawy programowania obiektowego", LocalDateTime.of(2019, 7, 8, 10, 0, 0), u6);
+        Zajecia z1 = new Zajecia(0L, "Speaking and listening in English", LocalDate.of(2019, 7, 1), u5);
+        Zajecia z2 = new Zajecia(0L, "Reading and writing in English", LocalDate.of(2019, 7, 2), u5);
+        Zajecia z3 = new Zajecia(0L, "Deutsch sprechen und zuhoren", LocalDate.of(2019, 7, 4), u5);
+        Zajecia z4 = new Zajecia(0L, "Deutsch lesen und schreiben", LocalDate.of(2019, 7, 5), u5);
+        Zajecia z5 = new Zajecia(0L, "Inzynieria oprogramowania", LocalDate.of(2019, 7, 8), u6);
+        Zajecia z6 = new Zajecia(0L, "Podstawy programowania obiektowego", LocalDate.of(2019, 7, 8), u6);
 
         z1 = zajeciaRepozytorium.save(z1);
         z2 = zajeciaRepozytorium.save(z2);
@@ -79,11 +79,11 @@ public class InitializationService {
         k1 = kursRepozytorium.save(k1);
         k2 = kursRepozytorium.save(k2);
 
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 20, 10, 0, 0), null, u1, k1));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 21, 10, 0, 0), null, u1, k2));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 22, 10, 0, 0), null, u2, k1));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 23, 10, 0, 0), null, u3, k2));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDateTime.of(2019, 6, 24, 10, 0, 0), null, u4, k2));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 20), null, u1, k1));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 21), null, u1, k2));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 22), null, u2, k1));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 23), null, u3, k2));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 24), null, u4, k2));
 
         powiadomienieRepozytorium.save(new Powiadomienie(0L, "Powiadomienie", "Niedlugo pierwsze zajecia z kursu", u1, z1));
         powiadomienieRepozytorium.save(new Powiadomienie(0L, "Powiadomienie", "Niedlugo pierwsze zajecia z kursu", u1, z5));
