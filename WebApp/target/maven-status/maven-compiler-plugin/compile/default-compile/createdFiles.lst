@@ -1,0 +1,14 @@
+com\example\demo\repository\ZgloszenieRepozytorium.class
+com\example\demo\repository\KursRepozytorium.class
+com\example\demo\model\Blok.class
+com\example\demo\model\Kurs.class
+com\example\demo\model\Typ.class
+com\example\demo\repository\BlokRepozytorium.class
+com\example\demo\model\Powiadomienie.class
+com\example\demo\model\Zajecia.class
+com\example\demo\repository\UzytkownikRepozytorium.class
+com\example\demo\repository\PowiadomienieRepozytorium.class
+com\example\demo\model\Uzytkownik.class
+com\example\demo\service\InitializationService.class
+com\example\demo\repository\ZajeciaRepozytorium.class
+com\example\demo\model\Zgloszenie.class

@@ -1,13 +1,14 @@
 package com.example.demo.ui;
 
-import com.example.demo.model.User;
+import com.example.demo.model.Typ;
+import com.example.demo.model.Uzytkownik;
 import com.example.demo.repository.*;
 import com.google.common.hash.Hashing;
 import com.vaadin.annotations.Theme;
-import com.vaadin.server.*;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.charset.StandardCharsets;
@@ -20,152 +21,142 @@ import java.util.regex.Pattern;
 public class LoginSignUpUI extends UI {
 
     @Autowired
-    UserRepository userRepository;
+    BlokRepozytorium blokRepozytorium;
 
     @Autowired
-    ProjectRepository projectRepository;
+    KursRepozytorium kursRepozytorium;
 
     @Autowired
-    ProjectParticipationRepository projectParticipationRepository;
+    PowiadomienieRepozytorium powiadomienieRepozytorium;
 
     @Autowired
-    TaskRepository taskRepository;
+    UzytkownikRepozytorium uzytkownikRepozytorium;
 
     @Autowired
-    SprintRepository sprintRepository;
+    ZajeciaRepozytorium zajeciaRepozytorium;
+
+    @Autowired
+    ZgloszenieRepozytorium zgloszenieRepozytorium;
 
     private VerticalLayout root;
     private VerticalLayout verticalLayout;
-    private Button loginButton;
-    private Button signUpButton;
+    private Button logowanie;
+    private Button rejestracja;
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        Page.getCurrent().setTitle("Login");
+        Page.getCurrent().setTitle("System szkoleń");
         root = new VerticalLayout();
         root.setSpacing(true);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
-        loginButton = new Button("Choose to login");
-        signUpButton = new Button("Choose to sign up");
-//        loginButton.addStyleName("redDottedButton");
+        logowanie = new Button("Logowanie");
+        rejestracja = new Button("Rejestracja");
 
-        horizontalLayout.addComponents(loginButton, signUpButton);
+        horizontalLayout.addComponents(logowanie, rejestracja);
         verticalLayout = new VerticalLayout();
 
-        login();
-        singUp();
+        logowanie();
+        rejestracja();
 
         root.addComponents(horizontalLayout, verticalLayout);
         setContent(root);
     }
 
-    private void singUp() {
-        signUpButton.addClickListener(clickEvent -> {
+    private void rejestracja() {
+        rejestracja.addClickListener(clickEvent -> {
             verticalLayout.removeAllComponents();
-            TextField loginTextField = new TextField("Write login: ");
-            TextField emailTextField = new TextField("Write email: ");
-            TextField nameTextField = new TextField("Write name: ");
-            PasswordField passwordField = new PasswordField("Write password: ");
-            Button login = new Button("Sign up");
-            verticalLayout.addComponents(loginTextField, emailTextField, nameTextField, passwordField, login);
+
+            TextField imieTextField = new TextField("Podaj imię: ");
+            TextField nazwiskoTextField = new TextField("Podaj nazwisko: ");
+            TextField loginTextField = new TextField("Podaj login: ");
+            PasswordField hasloField = new PasswordField("Podaj hasło: ");
+            Label label = new Label();
+            Button login = new Button("Zarejestruj się");
+
+            verticalLayout.addComponents(imieTextField, nazwiskoTextField, loginTextField, hasloField, label, login);
 
             login.addClickListener(event -> {
-                String loginString = loginTextField.getValue();
-                String emailString = emailTextField.getValue();
-                String nameString = nameTextField.getValue();
-                String passwordString = passwordField.getValue();
+                String imieText = imieTextField.getValue();
+                String nazwiskoText = nazwiskoTextField.getValue();
+                String loginText = loginTextField.getValue();
+                String hasloText = hasloField.getValue();
 
-                if (loginString.length() > 4) {
-                    if (EmailValidator.getInstance(true).isValid(emailString)) {
-                        if (nameString.length() > 4) {
-                            if (passwordString.length() > 6 && passwordString.length() < 20) {
-                                if (validatePassword(passwordString)) {
-                                    if (!userRepository.findAllLogins().contains(loginString)) {
-                                        if (!userRepository.findAllEmails().contains(emailString)) {
-                                            if (!userRepository.findAllNames().contains(nameString)) {
-                                                User user = new User(0L, loginString, Hashing.sha512().hashString(passwordString, StandardCharsets.UTF_8).toString()
-                                                        , emailString, nameString);
-                                                userRepository.save(user);
-                                                Notification.show("Successfully signed up!",
-                                                        "",
-                                                        Notification.Type.HUMANIZED_MESSAGE);
-                                            } else {
-                                                Notification.show("This name already exists!", "",
-                                                        Notification.Type.HUMANIZED_MESSAGE);
-                                            }
-                                        } else {
-                                            Notification.show("This email already exists!", "",
-                                                    Notification.Type.HUMANIZED_MESSAGE);
-                                        }
-                                    } else {
-                                        Notification.show("This login already exists!", "",
-                                                Notification.Type.HUMANIZED_MESSAGE);
-                                    }
-                                } else
-                                    Notification.show("Password has to contain at least one digit," +
-                                                    " one lowercase and one uppercase character!", "",
-                                            Notification.Type.HUMANIZED_MESSAGE);
+                if (imieText.length() > 3 && nazwiskoText.length() > 3 && loginText.length() > 3) {
+                    if (hasloText.length() > 5 && hasloText.length() < 20) {
+                        if (sprawdzHaslo(hasloText)) {
+                            if (!uzytkownikRepozytorium.findAllLogins().contains(loginText)) {
+
+                                Uzytkownik uzytkownik = new Uzytkownik(0L, loginText,
+                                        Hashing.sha512().hashString(hasloText, StandardCharsets.UTF_8).toString(),
+                                        Typ.UCZESTNIK, imieText, nazwiskoText, 0);
+
+                                uzytkownikRepozytorium.save(uzytkownik);
+
+                                imieTextField.setValue(null);
+                                nazwiskoTextField.setValue(null);
+                                loginTextField.setValue(null);
+                                hasloField.setValue(null);
+
+                                Notification.show("Rejestracja udana!", "", Notification.Type.HUMANIZED_MESSAGE);
                             } else
-                                Notification.show("Password has to have between 6 and 20 characters!", "",
-                                        Notification.Type.HUMANIZED_MESSAGE);
+                                Notification.show("Podany login już istnieje!", "", Notification.Type.HUMANIZED_MESSAGE);
                         } else
-                            Notification.show("Name has to have more than 4 characters!", "",
-                                    Notification.Type.HUMANIZED_MESSAGE);
+                            Notification.show("Hasło musi składać się z conajmniej: 1 małej litery, 1 dużej litery i 1 cyfry!",
+                                    "", Notification.Type.HUMANIZED_MESSAGE);
                     } else
-                        Notification.show("Email is not correct!", "",
-                                Notification.Type.HUMANIZED_MESSAGE);
+                        Notification.show("Hasło musi składać się z conajmniej 6 znaków!", "", Notification.Type.HUMANIZED_MESSAGE);
+
                 } else
-                    Notification.show("Login has to have more than 4 characters!", "",
-                            Notification.Type.HUMANIZED_MESSAGE);
+                    Notification.show("Dane muszą składać się z conajmniej 4 znaków!", "", Notification.Type.HUMANIZED_MESSAGE);
             });
         });
     }
 
-    private void login() {
-        loginButton.addClickListener(clickEvent -> {
+    private void logowanie() {
+        logowanie.addClickListener(clickEvent -> {
             verticalLayout.removeAllComponents();
-            TextField loginTextField = new TextField("Write login: ");
-            PasswordField passwordField = new PasswordField("Write password: ");
-            Button login = new Button("Login");
-            verticalLayout.addComponents(loginTextField, passwordField, login);
+
+            TextField loginTextField = new TextField("Podaj login: ");
+            PasswordField passwordField = new PasswordField("Podaj hasło: ");
+            Label label = new Label();
+            Button login = new Button("Zaloguj się");
+
+            verticalLayout.addComponents(loginTextField, passwordField, label, login);
 
             login.addClickListener(event -> {
-                Optional<User> user = userRepository.findByLogin(loginTextField.getValue());
-                if (user.isPresent()) {
-                    if (user.get().getPassword().equals(Hashing.sha512().hashString(passwordField.getValue(), StandardCharsets.UTF_8).toString())) {
-                        Notification.show("Login successful!",
-                                "",
-                                Notification.Type.HUMANIZED_MESSAGE);
-                        root.removeAllComponents();
-                        root.addComponent(new LoggedUI(user.get(), userRepository, projectRepository, projectParticipationRepository, taskRepository, sprintRepository));
+                Optional<Uzytkownik> uzytkownik = uzytkownikRepozytorium.findByLogin(loginTextField.getValue());
+                if (uzytkownik.isPresent()) {
+                    if (uzytkownik.get().getHaslo().equals(Hashing.sha512().hashString(passwordField.getValue(), StandardCharsets.UTF_8).toString())) {
+                        Notification.show("Logowanie udane!", "", Notification.Type.HUMANIZED_MESSAGE);
 
-                        Button signOut = new Button("Sign out");
-                        signOut.addClickListener(event1 -> {
+                        root.removeAllComponents();
+//                        root.addComponent(new LoggedUI(uzytkownik.get(), blokRepozytorium, kursRepozytorium,
+//                                powiadomienieRepozytorium, uzytkownikRepozytorium, zajeciaRepozytorium, zgloszenieRepozytorium);
+
+                        Button wyloguj = new Button("Wyloguj");
+                        wyloguj.addClickListener(event1 -> {
                             root.removeAllComponents();
                             init(null);
-                            loginButton.click();
+                            logowanie.click();
                         });
 
-                        root.addComponent(signOut);
+                        root.addComponent(wyloguj);
                     } else {
-                        Notification.show("Wrong password!", "",
-                                Notification.Type.HUMANIZED_MESSAGE);
+                        Notification.show("Nieprawidłowe hasło!", "", Notification.Type.HUMANIZED_MESSAGE);
                     }
                 } else {
-                    Notification.show("This login does not exist!", "",
-                            Notification.Type.HUMANIZED_MESSAGE);
+                    Notification.show("Podany login nie istnieje!", "", Notification.Type.HUMANIZED_MESSAGE);
                 }
             });
         });
     }
 
-    private boolean validatePassword(String passwordString) {
-        final String PASSWORD_PATTERN =
-                "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,20})";
-        Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
-        Matcher matcher = pattern.matcher(passwordString);
+    private boolean sprawdzHaslo(String haslo) {
+        final String patternString = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,20})";
+        Pattern pattern = Pattern.compile(patternString);
+        Matcher matcher = pattern.matcher(haslo);
+
         return matcher.matches();
     }
-
 }

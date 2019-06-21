@@ -18,6 +18,6 @@ public class Blok {
     private Long id;
     private String nazwa;
 
-    @OneToMany
+    @ManyToMany
     private List<Zajecia> zajecia;
 }

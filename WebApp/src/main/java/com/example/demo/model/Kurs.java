@@ -18,6 +18,6 @@ public class Kurs {
     private Long id;
     private String nazwa;
 
-    @OneToMany
-    private List<Blok> bloki;
+    @ManyToMany
+    private List<Blok> blok;
 }

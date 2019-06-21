@@ -19,6 +19,6 @@ public class Zajecia {
     private String temat;
     private LocalDateTime data;
 
-    @OneToOne
+    @ManyToOne
     private Uzytkownik prowadzacy;
 }

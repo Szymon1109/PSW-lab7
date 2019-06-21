@@ -12,7 +12,6 @@ import java.util.Optional;
 public interface UzytkownikRepozytorium extends JpaRepository<Uzytkownik, Long> {
 
     Optional<Uzytkownik> findByLogin(String login);
-    List<Uzytkownik> findAllUzytkownik();
 
     @Query(value = "SELECT login FROM uzytkownik", nativeQuery = true)
     List<Object> findAllLogins();

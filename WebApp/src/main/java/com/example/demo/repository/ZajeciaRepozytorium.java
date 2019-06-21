@@ -13,6 +13,6 @@ public interface ZajeciaRepozytorium extends JpaRepository<Zajecia, Long> {
     List<Zajecia> findAllByProwadzacy(Uzytkownik uzytkownik);
     List<Zajecia> findAllByTematStartingWithIgnoreCase(String name);
 
-    @Transactional
-    void deleteAllByBlok(Blok blok);
+    /*@Transactional
+    void deleteAllByBlok(Blok blok);*/
 }
