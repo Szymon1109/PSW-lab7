@@ -100,15 +100,15 @@ public class LoginSignUpUI extends UI {
 
                                 Notification.show("Rejestracja udana!", "", Notification.Type.HUMANIZED_MESSAGE);
                             } else
-                                Notification.show("Podany login już istnieje!", "", Notification.Type.HUMANIZED_MESSAGE);
+                                Notification.show("Podany login już istnieje!", "", Notification.Type.ERROR_MESSAGE);
                         } else
                             Notification.show("Hasło musi składać się z conajmniej: 1 małej litery, 1 dużej litery i 1 cyfry!",
-                                    "", Notification.Type.HUMANIZED_MESSAGE);
+                                    "", Notification.Type.ERROR_MESSAGE);
                     } else
-                        Notification.show("Hasło musi składać się z conajmniej 6 znaków!", "", Notification.Type.HUMANIZED_MESSAGE);
+                        Notification.show("Hasło musi składać się z conajmniej 6 znaków!", "", Notification.Type.ERROR_MESSAGE);
 
                 } else
-                    Notification.show("Dane muszą składać się z conajmniej 4 znaków!", "", Notification.Type.HUMANIZED_MESSAGE);
+                    Notification.show("Dane muszą składać się z conajmniej 4 znaków!", "", Notification.Type.ERROR_MESSAGE);
             });
         });
     }
@@ -143,10 +143,10 @@ public class LoginSignUpUI extends UI {
 
                         root.addComponent(wyloguj);
                     } else {
-                        Notification.show("Nieprawidłowe hasło!", "", Notification.Type.HUMANIZED_MESSAGE);
+                        Notification.show("Nieprawidłowe hasło!", "", Notification.Type.ERROR_MESSAGE);
                     }
                 } else {
-                    Notification.show("Podany login nie istnieje!", "", Notification.Type.HUMANIZED_MESSAGE);
+                    Notification.show("Podany login nie istnieje!", "", Notification.Type.ERROR_MESSAGE);
                 }
             });
         });

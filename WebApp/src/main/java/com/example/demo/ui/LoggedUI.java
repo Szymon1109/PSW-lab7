@@ -35,7 +35,9 @@ public class LoggedUI extends VerticalLayout {
 
     private List<Kurs> listaKursow;
     private List<Uzytkownik> listaUzytkownikow;
-    private ListDataProvider<Kurs> projectsUserParticipationProvider;
+    private List<Zgloszenie> zgloszenia;
+    private List<Blok> listaBlokow;
+    private List<Zajecia> listaZajec;
 
     public LoggedUI(Uzytkownik uzytkownik, BlokRepozytorium blokRepozytorium, KursRepozytorium kursRepozytorium,
                     PowiadomienieRepozytorium powiadomienieRepozytorium, UzytkownikRepozytorium uzytkownikRepozytorium,
@@ -104,15 +106,17 @@ public class LoggedUI extends VerticalLayout {
         Button createButton = new Button("Utwórz");
 
         createButton.addClickListener(event1 -> {
-            if (kursRepozytorium.findAllByNazwa(nameProject.getValue()).isEmpty()) {
-                Kurs kurs = kursRepozytorium.save(
-                        new Kurs(0L, nameProject.getValue(), null));
+            if (nameProject.getValue() != null) {
+                if (kursRepozytorium.findAllByNazwa(nameProject.getValue()).isEmpty()) {
+                    Kurs kurs = kursRepozytorium.save(
+                            new Kurs(0L, nameProject.getValue(), null));
 
-                listaKursow.add(kurs);
-                Notification.show("Utworzono kurs", "", Notification.Type.HUMANIZED_MESSAGE);
+                    listaKursow.add(kurs);
+                    Notification.show("Utworzono kurs", "", Notification.Type.HUMANIZED_MESSAGE);
 
-            } else
-                Notification.show("Kurs o podanej nazwie istnieje!", "", Notification.Type.ERROR_MESSAGE);
+                } else
+                    Notification.show("Kurs o podanej nazwie istnieje!", "", Notification.Type.ERROR_MESSAGE);
+            }
         });
 
         utworzKursLayout.addComponents(nameProject, createButton);
@@ -149,7 +153,7 @@ public class LoggedUI extends VerticalLayout {
         uzytkownikComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
         uzytkownikComboBox.setWidth("250");
 
-        List<Zgloszenie> zgloszenia = zgloszenieRepozytorium.findAllByUczestnik(uzytkownikComboBox.getValue());
+        zgloszenia = zgloszenieRepozytorium.findAllByUczestnik(uzytkownikComboBox.getValue());
         zgloszenia.stream().filter(z -> z.getZgoda() == null);
 
         ComboBox<Zgloszenie> zgloszenieComboBox = new ComboBox<>("Wybierz zgłoszenie");
@@ -172,6 +176,7 @@ public class LoggedUI extends VerticalLayout {
             if (zgloszenieComboBox.getValue() != null) {
                 zgloszenieComboBox.getValue().setZgoda(false);
                 Notification.show("Odrzucono zgłoszenie!", "", Notification.Type.HUMANIZED_MESSAGE);
+
             } else
                 Notification.show("Nie wybrano zgłoszenia!", "", Notification.Type.ERROR_MESSAGE);
         });
@@ -182,76 +187,67 @@ public class LoggedUI extends VerticalLayout {
 
     private void initBlokiLayout() {
         zarzadzanieBlokamiLayout = new VerticalLayout();
-        ComboBox<Project> projectComboBox = new ComboBox<>("Choose project");
-        projectComboBox.setEmptySelectionAllowed(false);
-        projectComboBox.setDataProvider(projectsAdministratorProvider);
-        projectComboBox.setItemCaptionGenerator(Project::getName);
 
-        Grid<Sprint> sprintGrid = new Grid<>();
-        sprintGrid.addColumn(Sprint::getId).setCaption("No.");
-        sprintGrid.addColumn(Sprint::getFromLocalDate).setCaption("From");
-        sprintGrid.addColumn(Sprint::getToLocalDate).setCaption("To");
-        sprintGrid.addColumn(Sprint::getStoryPointsPlanned).setCaption("Planned story points");
-        sprintGrid.setWidth("650");
-        sprintGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        List<Sprint> sprintList = new ArrayList<>();
-        ListDataProvider<Sprint> provider = DataProvider.ofCollection(sprintList);
-        sprintGrid.setDataProvider(provider);
+        ComboBox<Kurs> kursComboBox = new ComboBox<>("Wybierz kurs");
+        kursComboBox.setEmptySelectionAllowed(false);
+        kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
+        kursComboBox.setItemCaptionGenerator(Kurs::getNazwa);
 
-        projectComboBox.addValueChangeListener(event1 -> {
-                    sprintList.clear();
-                    sprintList.addAll(sprintRepository.findAllByProject(event1.getValue()));
-                    provider.refreshAll();
-                }
-        );
+        Grid<Blok> blokGrid = new Grid<>();
+        blokGrid.addColumn(Blok::getId).setCaption("ID");
+        blokGrid.addColumn(Blok::getNazwa).setCaption("Nazwa");
+        blokGrid.setWidth("650");
+        blokGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        listaBlokow = kursComboBox.getValue().getBlok();
+        ListDataProvider<Blok> provider = DataProvider.ofCollection(listaBlokow);
+        blokGrid.setDataProvider(provider);
+
+        kursComboBox.addValueChangeListener(event1 -> {
+            listaBlokow.clear();
+            listaBlokow.addAll(event1.getValue().getBlok());
+            provider.refreshAll();
+        });
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
-        DateField fromDateField = new DateField("Select start of sprint");
-        fromDateField.setValue(LocalDate.now());
-        fromDateField.setTextFieldEnabled(false);
-        DateField toDateField = new DateField("Select end of sprint");
-        toDateField.setValue(LocalDate.now().plusDays(7L));
-        toDateField.setTextFieldEnabled(false);
-        TextField storyPointsPlannedTextField = new TextField("Planned story points");
 
-        Button addButton = new Button("Add sprint");
-        addButton.addClickListener(event -> {
-            try {
-                if (toDateField.getValue().isAfter(fromDateField.getValue())) {
-                    if (sprintRepository.findAllByProject(projectComboBox.getValue()).stream().allMatch(sprint ->
-                            fromDateField.getValue().isAfter(sprint.getToLocalDate()) || toDateField.getValue().isBefore(sprint.getFromLocalDate()))) {
-                        Sprint sprint = sprintRepository.save(new Sprint(0L, fromDateField.getValue(),
-                                toDateField.getValue(), Integer.valueOf(storyPointsPlannedTextField.getValue()), projectComboBox.getValue()));
-                        sprintList.add(sprint);
-                        provider.refreshAll();
-                    } else {
-                        Notification.show("Sprint will overlap with other!", "",
-                                Notification.Type.ERROR_MESSAGE);
-                    }
-                } else {
-                    Notification.show("Wrong dates!", "",
-                            Notification.Type.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException e) {
-                Notification.show("Wrong number of planned story points", "",
-                        Notification.Type.ERROR_MESSAGE);
+        Button deleteButton = new Button("Usuń");
+        deleteButton.addClickListener(event -> {
+            if (!blokGrid.getSelectedItems().isEmpty()) {
+                Blok blok = blokGrid.getSelectedItems().iterator().next();
+                listaBlokow.remove(blok);
+                provider.refreshAll();
+                kursRepozytorium.deleteAllByBlok(blok);
+                blokRepozytorium.delete(blok);
+                Notification.show("Usunięto blok", "", Notification.Type.HUMANIZED_MESSAGE);
             }
         });
 
-        Button deleteButton = new Button("Delete");
-        deleteButton.addClickListener(event -> {
-            if (!sprintGrid.getSelectedItems().isEmpty()) {
-                Sprint sprint = sprintGrid.getSelectedItems().iterator().next();
-                sprintList.remove(sprint);
-                provider.refreshAll();
-                taskRepository.deleteAllBySprint(sprint);
-                sprintRepository.delete(sprint);
-                Notification.show("Sprint has been deleted", "",
-                        Notification.Type.HUMANIZED_MESSAGE);
-            }
-        });horizontalLayout.addComponents(deleteButton, addButton);
+        Label label = new Label();
+        TextField nazwaBloku = new TextField("Nazwa bloku");
 
-        zarzadzanieBlokamiLayout.addComponents(projectComboBox, sprintGrid, horizontalLayout, fromDateField, toDateField, storyPointsPlannedTextField);
+        Button addButton = new Button("Dodaj blok");
+        addButton.addClickListener(event -> {
+            if (nazwaBloku.getValue() != null) {
+                if (blokRepozytorium.findAllByNazwa(nazwaBloku.getValue()).isEmpty()) {
+
+                    Blok blok = blokRepozytorium.save(
+                            new Blok(0L, nazwaBloku.getValue(), null));
+
+                    List<Blok> currentList = kursComboBox.getValue().getBlok();
+                    currentList.add(blok);
+                    kursComboBox.getValue().setBlok(currentList);
+
+                    listaBlokow.add(blok);
+                    provider.refreshAll();
+                    Notification.show("Utworzono kurs", "", Notification.Type.HUMANIZED_MESSAGE);
+
+                } else
+                    Notification.show("Kurs o podanej nazwie istnieje!", "", Notification.Type.ERROR_MESSAGE);
+            } else
+                Notification.show("Nie podano nazwy kursu!", "", Notification.Type.ERROR_MESSAGE);
+        });
+
+        zarzadzanieBlokamiLayout.addComponents(kursComboBox, blokGrid, deleteButton, label, nazwaBloku, addButton);
     }
 
     private void initZajeciaLayout() {
@@ -379,6 +375,38 @@ public class LoggedUI extends VerticalLayout {
         HorizontalLayout addTasksHorizontalLayout = new HorizontalLayout();
         addTasksHorizontalLayout.addComponents(chooseToAddTaskButton, chooseToEditProgressButton);
         zarzadzanieZajeciamiLayout.addComponents(findTasksHorizontalLayout, taskGrid, addTasksHorizontalLayout, verticalLayout);
+
+        DateField fromDateField = new DateField("Select start of sprint");
+        fromDateField.setValue(LocalDate.now());
+        fromDateField.setTextFieldEnabled(false);
+        DateField toDateField = new DateField("Select end of sprint");
+        toDateField.setValue(LocalDate.now().plusDays(7L));
+        toDateField.setTextFieldEnabled(false);
+        TextField storyPointsPlannedTextField = new TextField("Planned story points");
+
+        /*Button addButton = new Button("Dodaj zajecia");
+        addButton.addClickListener(event -> {
+            try {
+                if (toDateField.getValue().isAfter(fromDateField.getValue())) {
+                    if (sprintRepository.findAllByProject(projectComboBox.getValue()).stream().allMatch(sprint ->
+                            fromDateField.getValue().isAfter(sprint.getToLocalDate()) || toDateField.getValue().isBefore(sprint.getFromLocalDate()))) {
+                        Sprint sprint = sprintRepository.save(new Sprint(0L, fromDateField.getValue(),
+                                toDateField.getValue(), Integer.valueOf(storyPointsPlannedTextField.getValue()), projectComboBox.getValue()));
+                        sprintList.add(sprint);
+                        provider.refreshAll();
+                    } else {
+                        Notification.show("Sprint will overlap with other!", "",
+                                Notification.Type.ERROR_MESSAGE);
+                    }
+                } else {
+                    Notification.show("Wrong dates!", "",
+                            Notification.Type.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException e) {
+                Notification.show("Wrong number of planned story points", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });*/
     }
 
     private void initInformationProjectLayout() {
