@@ -19,9 +19,9 @@ public class Zgloszenie {
     private LocalDate data;
     private Boolean zgoda;
 
-    @OneToOne
+    @ManyToOne
     private Uzytkownik uczestnik;
 
-    @OneToOne
+    @ManyToOne
     private Kurs kurs;
 }

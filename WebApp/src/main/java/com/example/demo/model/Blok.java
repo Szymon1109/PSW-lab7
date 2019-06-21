@@ -18,6 +18,6 @@ public class Blok {
     private Long id;
     private String nazwa;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Zajecia> zajecia;
 }

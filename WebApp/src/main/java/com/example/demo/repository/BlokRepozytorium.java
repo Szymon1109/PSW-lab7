@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface BlokRepozytorium extends JpaRepository<Blok, Long> {
     List<Blok> findAllByNazwa(String nazwa);
-    List<Blok> findAllByZajecia(Zajecia zajecia);
-    void deleteAllByZajecia(Zajecia zajecia);
+    //List<Blok> findAllByZajecia(Zajecia zajecia);
+    //void deleteAllByZajecia(Zajecia zajecia);
 }

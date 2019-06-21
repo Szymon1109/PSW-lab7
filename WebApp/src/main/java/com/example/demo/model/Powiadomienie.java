@@ -18,9 +18,9 @@ public class Powiadomienie {
     private String temat;
     private String tresc;
 
-    @OneToOne
+    @ManyToOne
     private Uzytkownik uzytkownik;
 
-    @OneToOne
+    @ManyToOne
     private Zajecia zajecia;
 }

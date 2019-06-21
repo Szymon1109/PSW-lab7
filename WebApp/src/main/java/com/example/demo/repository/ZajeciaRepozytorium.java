@@ -10,9 +10,9 @@ import java.util.List;
 @Repository
 public interface ZajeciaRepozytorium extends JpaRepository<Zajecia, Long> {
 
-    List<Zajecia> findAllByNazwa(String nazwa);
+    List<Zajecia> findAllByTemat(String temat);
     List<Zajecia> findAllByProwadzacy(Uzytkownik uzytkownik);
-    List<Zajecia> findAllByTematStartingWithIgnoreCase(String name);
+    //List<Zajecia> findAllByTematStartingWithIgnoreCase(String name);
 
     /*@Transactional
     void deleteAllByBlok(Blok blok);*/

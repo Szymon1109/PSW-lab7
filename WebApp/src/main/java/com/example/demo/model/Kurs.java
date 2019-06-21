@@ -3,6 +3,7 @@ package com.example.demo.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,6 +19,6 @@ public class Kurs {
     private Long id;
     private String nazwa;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Blok> blok;
 }

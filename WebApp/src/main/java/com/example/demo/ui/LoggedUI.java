@@ -9,6 +9,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,12 +39,11 @@ public class LoggedUI extends VerticalLayout {
     private VerticalLayout zarzadzanieZajeciamiLayout;
     private VerticalLayout zarzadzanieProwadzacymiLayout;
 
-    private List<Kurs> listaKursow;
-    private List<Uzytkownik> listaUzytkownikow;
-    private List<Uzytkownik> listaProwadzacych;
-    private List<Zgloszenie> zgloszenia;
-    private List<Blok> listaBlokow;
-    private List<Zajecia> listaZajec;
+    private List<Kurs> listaKursow = new ArrayList<>();
+    private List<Uzytkownik> listaUzytkownikow = new ArrayList<>();
+    private List<Uzytkownik> listaProwadzacych = new ArrayList<>();
+    private List<Zgloszenie> zgloszenia = new ArrayList<>();
+    private List<Zajecia> listaZajec = new ArrayList<>();
 
     public LoggedUI(Uzytkownik uzytkownik, BlokRepozytorium blokRepozytorium, KursRepozytorium kursRepozytorium,
                     PowiadomienieRepozytorium powiadomienieRepozytorium, UzytkownikRepozytorium uzytkownikRepozytorium,
@@ -85,7 +85,7 @@ public class LoggedUI extends VerticalLayout {
                 verticalLayout.addComponent(utworzKursLayout);
             });
 
-            zarzadzanieZgodami = new Button("Zgody");
+            zarzadzanieZgodami = new Button("Zgłoszenia");
             zarzadzanieZgodami.addClickListener(event -> {
                 verticalLayout.removeAllComponents();
                 verticalLayout.addComponent(zgodyLayout);
@@ -121,12 +121,13 @@ public class LoggedUI extends VerticalLayout {
         Button createButton = new Button("Utwórz");
 
         createButton.addClickListener(event1 -> {
-            if (nameProject.getValue() != null) {
+            if (nameProject.getValue() != "") {
                 if (kursRepozytorium.findAllByNazwa(nameProject.getValue()).isEmpty()) {
                     Kurs kurs = kursRepozytorium.save(
                             new Kurs(0L, nameProject.getValue(), null));
 
                     listaKursow.add(kurs);
+                    nameProject.setValue("");
                     Notification.show("Utworzono kurs", "", Notification.Type.HUMANIZED_MESSAGE);
 
                 } else
@@ -147,13 +148,24 @@ public class LoggedUI extends VerticalLayout {
         deleteKursButton.addClickListener(event1 -> {
             if (kursComboBox.getValue() != null) {
                 kursRepozytorium.delete(kursComboBox.getValue());
+                listaKursow.remove(kursComboBox.getValue());
+
+                kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
+                kursComboBox.setValue(null);
+
                 Notification.show("Kurs został usunięty!", "", Notification.Type.HUMANIZED_MESSAGE);
 
             } else
                 Notification.show("Nie wybrano kursu!", "", Notification.Type.ERROR_MESSAGE);
         });
 
-        utworzKursLayout.addComponents(emptyLabel, kursComboBox, deleteKursButton);
+        Label label = new Label();
+        Button odswiez = new Button("Odśwież");
+        odswiez.addClickListener(event -> {
+            kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
+        });
+
+        utworzKursLayout.addComponents(emptyLabel, kursComboBox, deleteKursButton, label, odswiez);
 
         //TODO:
         //update kursy
@@ -162,42 +174,52 @@ public class LoggedUI extends VerticalLayout {
     private void initZgodaLayout() {
         zgodyLayout = new VerticalLayout();
 
-        ComboBox<Uzytkownik> uzytkownikComboBox = new ComboBox<>("Wybierz użytkownika");
+        ComboBox<Uzytkownik> uzytkownikComboBox = new ComboBox<>("Wybierz uczestnika");
         uzytkownikComboBox.setEmptySelectionAllowed(false);
         uzytkownikComboBox.setDataProvider(DataProvider.ofCollection(listaUzytkownikow));
         uzytkownikComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
-        uzytkownikComboBox.setWidth("250");
-
-        zgloszenia = zgloszenieRepozytorium.findAllByUczestnik(uzytkownikComboBox.getValue())
-                .stream()
-                .filter(z -> z.getZgoda() == null)
-                .collect(Collectors.toList());
 
         ComboBox<Zgloszenie> zgloszenieComboBox = new ComboBox<>("Wybierz zgłoszenie");
         zgloszenieComboBox.setEmptySelectionAllowed(false);
-        zgloszenieComboBox.setItemCaptionGenerator(Zgloszenie::toString);
-        zgloszenieComboBox.setWidth("250");
-        uzytkownikComboBox.addValueChangeListener(event -> zgloszenieComboBox.setItems(zgloszenia));
+        zgloszenieComboBox.setItemCaptionGenerator(z -> z.getKurs().getNazwa() + ": " + z.getData().toString());
+        zgloszenieComboBox.setWidth("300");
+        uzytkownikComboBox.addValueChangeListener(event -> zgloszenieComboBox.setItems(
+                zgloszenieRepozytorium.findAllByUczestnik(uzytkownikComboBox.getValue())
+                        .stream()
+                        .filter(z -> z.getZgoda() == null)
+                        .collect(Collectors.toList())));
 
         Button potwierdz = new Button("Potwierdź");
         potwierdz.addClickListener(event1 -> {
             if (zgloszenieComboBox.getValue() != null) {
-                zgloszenieComboBox.getValue().setZgoda(true);
+                Zgloszenie zgloszenie = zgloszenieComboBox.getValue();
+                zgloszenie.setZgoda(true);
+                zgloszenieRepozytorium.save(zgloszenie);
+
+                uzytkownikComboBox.setValue(null);
+                zgloszenieComboBox.setValue(null);
+
                 Notification.show("Potwierdzono zgłoszenie!", "", Notification.Type.HUMANIZED_MESSAGE);
             } else
                 Notification.show("Nie wybrano zgłoszenia!", "", Notification.Type.ERROR_MESSAGE);
         });
 
         Button odrzuc = new Button("Odrzuć");
-        potwierdz.addClickListener(event1 -> {
+        odrzuc.addClickListener(event1 -> {
             if (zgloszenieComboBox.getValue() != null) {
-                zgloszenieComboBox.getValue().setZgoda(false);
-                Notification.show("Odrzucono zgłoszenie!", "", Notification.Type.HUMANIZED_MESSAGE);
+                Zgloszenie zgloszenie = zgloszenieComboBox.getValue();
+                zgloszenie.setZgoda(false);
+                zgloszenieRepozytorium.save(zgloszenie);
 
+                uzytkownikComboBox.setValue(null);
+                zgloszenieComboBox.setValue(null);
+
+                Notification.show("Odrzucono zgłoszenie!", "", Notification.Type.HUMANIZED_MESSAGE);
             } else
                 Notification.show("Nie wybrano zgłoszenia!", "", Notification.Type.ERROR_MESSAGE);
         });
 
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.addComponents(potwierdz, odrzuc);
         zgodyLayout.addComponents(uzytkownikComboBox, zgloszenieComboBox, horizontalLayout);
     }
@@ -209,19 +231,20 @@ public class LoggedUI extends VerticalLayout {
         kursComboBox.setEmptySelectionAllowed(false);
         kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
         kursComboBox.setItemCaptionGenerator(Kurs::getNazwa);
+        kursComboBox.setWidth("250");
 
         Grid<Blok> blokGrid = new Grid<>();
-        blokGrid.addColumn(Blok::getId).setCaption("ID");
-        blokGrid.addColumn(Blok::getNazwa).setCaption("Nazwa");
+        blokGrid.addColumn(Blok::getId).setCaption("ID").setWidth(100);
+        blokGrid.addColumn(Blok::getNazwa).setCaption("Nazwa").setWidth(550);
         blokGrid.setWidth("650");
         blokGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        listaBlokow = kursComboBox.getValue().getBlok();
+        List<Blok> listaBlokow = new ArrayList<>();
         ListDataProvider<Blok> provider = DataProvider.ofCollection(listaBlokow);
         blokGrid.setDataProvider(provider);
 
-        kursComboBox.addValueChangeListener(event1 -> {
+        kursComboBox.addValueChangeListener(event -> {
             listaBlokow.clear();
-            listaBlokow.addAll(event1.getValue().getBlok());
+            listaBlokow.addAll(event.getValue().getBlok());
             provider.refreshAll();
         });
 
@@ -246,7 +269,7 @@ public class LoggedUI extends VerticalLayout {
 
         Button addButton = new Button("Dodaj blok");
         addButton.addClickListener(event -> {
-            if (nazwaBloku.getValue() != null) {
+            if (nazwaBloku.getValue() != "") {
                 if (blokRepozytorium.findAllByNazwa(nazwaBloku.getValue()).isEmpty()) {
 
                     Blok blok = blokRepozytorium.save(
@@ -258,7 +281,9 @@ public class LoggedUI extends VerticalLayout {
 
                     listaBlokow.add(blok);
                     provider.refreshAll();
-                    Notification.show("Utworzono kurs", "", Notification.Type.HUMANIZED_MESSAGE);
+
+                    nazwaBloku.setValue("");
+                    Notification.show("Utworzono blok", "", Notification.Type.HUMANIZED_MESSAGE);
 
                 } else
                     Notification.show("Kurs o podanej nazwie istnieje!", "", Notification.Type.ERROR_MESSAGE);
@@ -275,6 +300,8 @@ public class LoggedUI extends VerticalLayout {
     private void initZajeciaLayout() {
         zarzadzanieZajeciamiLayout = new VerticalLayout();
 
+        List<Blok> listaBlokow = blokRepozytorium.findAll();
+
         ComboBox<Blok> blokComboBox = new ComboBox<>("Wybierz blok");
         blokComboBox.setEmptySelectionAllowed(false);
         blokComboBox.setDataProvider(DataProvider.ofCollection(listaBlokow));
@@ -287,7 +314,7 @@ public class LoggedUI extends VerticalLayout {
         zajeciaGrid.addColumn(Zajecia::getProwadzacy).setCaption("Prowadzący");
         zajeciaGrid.setWidth("650");
         zajeciaGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        listaZajec = blokComboBox.getValue().getZajecia();
+        List<Zajecia> listaZajec = new ArrayList<>();
         ListDataProvider<Zajecia> provider = DataProvider.ofCollection(listaZajec);
         zajeciaGrid.setDataProvider(provider);
 
@@ -326,7 +353,7 @@ public class LoggedUI extends VerticalLayout {
         Button addButton = new Button("Dodaj zajęcia");
         addButton.addClickListener(event -> {
             if (nazwaZajec.getValue() != null && dataField.getValue() != null && prowadzacyComboBox.getValue() != null) {
-                if (zajeciaRepozytorium.findAllByNazwa(nazwaZajec.getValue()).isEmpty()) {
+                if (zajeciaRepozytorium.findAllByTemat(nazwaZajec.getValue()).isEmpty()) {
 
                     Zajecia zajecia = zajeciaRepozytorium.save(
                             new Zajecia(0L, nazwaZajec.getValue(), dataField.getValue(), prowadzacyComboBox.getValue()));
@@ -345,7 +372,7 @@ public class LoggedUI extends VerticalLayout {
                 Notification.show("Nie wybrano wszystkich danych!", "", Notification.Type.ERROR_MESSAGE);
         });
 
-        zarzadzanieBlokamiLayout.addComponents(blokComboBox, zajeciaGrid, deleteButton, label, nazwaZajec, dataField, prowadzacyComboBox, addButton);
+        zarzadzanieZajeciamiLayout.addComponents(blokComboBox, zajeciaGrid, deleteButton, label, nazwaZajec, dataField, prowadzacyComboBox, addButton);
 
         //TODO:
         //update zajęcia
@@ -399,7 +426,7 @@ public class LoggedUI extends VerticalLayout {
         zarzadzanieProwadzacymiLayout.addComponents(imieTextField, nazwiskoTextField, loginTextField, hasloField, addUzytkownik);
 
         Label emptyLabel = new Label();
-        ComboBox<Uzytkownik> uzytkownikComboBox = new ComboBox<>("Wybierz użytkownika do usunięcia");
+        ComboBox<Uzytkownik> uzytkownikComboBox = new ComboBox<>("Wybierz prowadzącego do usunięcia");
         uzytkownikComboBox.setEmptySelectionAllowed(false);
         uzytkownikComboBox.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
         uzytkownikComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
@@ -421,7 +448,7 @@ public class LoggedUI extends VerticalLayout {
                 Notification.show("Nie wybrano prowadzącego!", "", Notification.Type.ERROR_MESSAGE);
         });
 
-        utworzKursLayout.addComponents(emptyLabel, uzytkownikComboBox, deleteButton);
+        zarzadzanieProwadzacymiLayout.addComponents(emptyLabel, uzytkownikComboBox, deleteButton);
     }
 
     private boolean sprawdzHaslo(String haslo) {

@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface KursRepozytorium extends JpaRepository<Kurs, Long> {
     List<Kurs> findAllByNazwa(String nazwa);
-    void deleteAllByBlok(Blok blok);
+    //void deleteAllByBlok(Blok blok);
 }
