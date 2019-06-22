@@ -164,8 +164,44 @@ public class LoggedUI extends VerticalLayout {
 
         utworzKursLayout.addComponents(emptyLabel, kursComboBox, deleteKursButton);
 
-        //TODO:
-        //update kursy
+        Label empty = new Label();
+        TextField nameKurs = new TextField("Nazwa");
+        nameKurs.setWidth("250");
+
+        ComboBox<Kurs> kursUpdate = new ComboBox<>("Wybierz kurs do aktualizacji");
+        kursUpdate.setEmptySelectionAllowed(false);
+        kursUpdate.setDataProvider(DataProvider.ofCollection(listaKursow));
+        kursUpdate.setItemCaptionGenerator(z -> z.getId().toString());
+        kursUpdate.setWidth("100");
+
+        kursUpdate.addValueChangeListener(event -> {
+            if(kursUpdate.getValue() != null) {
+                kursUpdate.setDataProvider(DataProvider.ofCollection(listaKursow));
+                nameKurs.setValue(kursUpdate.getValue().getNazwa());
+            }
+        });
+
+        Button updateKursButton = new Button("Aktualizuj");
+        updateKursButton.addClickListener(event1 -> {
+            if (kursUpdate.getValue() != null && nameKurs.getValue() != "") {
+                Kurs kurs = new Kurs(kursUpdate.getValue().getId(), nameKurs.getValue(), kursUpdate.getValue().getBlok());
+
+                kursRepozytorium.save(kurs);
+                listaKursow = kursRepozytorium.findAll();
+
+                nameKurs.setValue("");
+                kursUpdate.setValue(null);
+
+                kursUpdate.setDataProvider(DataProvider.ofCollection(listaKursow));
+                kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
+
+                Notification.show("Kurs został zaktualizowany!", "", Notification.Type.HUMANIZED_MESSAGE);
+
+            } else
+                Notification.show("Nie wybrano danych!", "", Notification.Type.ERROR_MESSAGE);
+        });
+
+        utworzKursLayout.addComponents(empty, kursUpdate, nameKurs, updateKursButton);
     }
 
     private void initZgodaLayout() {
@@ -260,6 +296,7 @@ public class LoggedUI extends VerticalLayout {
                 kurs.setBlok(currentList);
                 kursRepozytorium.save(kurs);
 
+                blokGrid.getSelectedItems().clear();
                 Notification.show("Usunięto blok", "", Notification.Type.HUMANIZED_MESSAGE);
             }
         });
@@ -295,8 +332,43 @@ public class LoggedUI extends VerticalLayout {
 
         zarzadzanieBlokamiLayout.addComponents(kursComboBox, blokGrid, deleteButton, label, nazwaBloku, addButton);
 
-        //TODO:
-        //update bloki
+        Label empty = new Label();
+        TextField nameBlok = new TextField("Nazwa");
+        nameBlok.setWidth("250");
+
+        ComboBox<Blok> blokUpdate = new ComboBox<>("Wybierz blok do aktualizacji");
+        blokUpdate.setEmptySelectionAllowed(false);
+        blokUpdate.setDataProvider(provider);
+        blokUpdate.setItemCaptionGenerator(b -> b.getId().toString());
+        blokUpdate.setWidth("100");
+
+        blokUpdate.addValueChangeListener(event -> {
+            if(blokUpdate.getValue() != null) {
+                provider.refreshAll();
+                nameBlok.setValue(blokUpdate.getValue().getNazwa());
+            }
+        });
+
+        Button updateBlokButton = new Button("Aktualizuj");
+        updateBlokButton.addClickListener(event1 -> {
+            if (blokUpdate.getValue() != null && nameBlok.getValue() != "") {
+                Blok blok = new Blok(blokUpdate.getValue().getId(), nameBlok.getValue(), blokUpdate.getValue().getZajecia());
+
+                blokRepozytorium.save(blok);
+
+                nameBlok.setValue("");
+                blokUpdate.setValue(null);
+
+                blokUpdate.setDataProvider(DataProvider.ofCollection(blokRepozytorium.findAll()));
+                blokGrid.setDataProvider(DataProvider.ofCollection(blokRepozytorium.findAll()));
+
+                Notification.show("Blok został zaktualizowany!", "", Notification.Type.HUMANIZED_MESSAGE);
+
+            } else
+                Notification.show("Nie wybrano danych!", "", Notification.Type.ERROR_MESSAGE);
+        });
+
+        zarzadzanieBlokamiLayout.addComponents(empty, blokUpdate, nameBlok, updateBlokButton);
     }
 
     private void initZajeciaLayout() {
@@ -345,6 +417,7 @@ public class LoggedUI extends VerticalLayout {
                 blok.setZajecia(currentList);
                 blokRepozytorium.save(blok);
 
+                zajeciaGrid.getSelectedItems().clear();
                 Notification.show("Usunięto zajęcia", "", Notification.Type.HUMANIZED_MESSAGE);
             }
         });
