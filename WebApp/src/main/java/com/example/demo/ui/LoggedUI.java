@@ -34,12 +34,18 @@ public class LoggedUI extends VerticalLayout {
     private Button zarzadzanieBlokami;
     private Button zarzadzanieZajeciami;
     private Button zarzadzanieProwadzacymi;
+    private Button kalendarz;
+    private Button powiadomienia;
+    private Button uzytkownikBloki;
 
     private VerticalLayout utworzKursLayout;
     private VerticalLayout zgodyLayout;
     private VerticalLayout zarzadzanieBlokamiLayout;
     private VerticalLayout zarzadzanieZajeciamiLayout;
     private VerticalLayout zarzadzanieProwadzacymiLayout;
+    private VerticalLayout kalendarzLayout;
+    private VerticalLayout powiadomieniaLayout;
+    private VerticalLayout uzytkownikBlokiLayout;
 
     private List<Kurs> listaKursow = new ArrayList<>();
     private List<Uzytkownik> listaUzytkownikow = new ArrayList<>();
@@ -112,6 +118,34 @@ public class LoggedUI extends VerticalLayout {
             });
 
             horizontalLayout.addComponents(zarzadzanieZgodami, utworzKurs, zarzadzanieBlokami, zarzadzanieZajeciami, zarzadzanieProwadzacymi);
+            addComponents(horizontalLayout, verticalLayout);
+        }
+
+        else if(uzytkownik.getTyp().equals(Typ.UCZESTNIK)) {
+
+            initKalendarzLayout();
+            initPowiadomieniaLayout();
+            initUzytkownikBlokiLayout();
+
+            kalendarz = new Button("Kalendarz");
+            kalendarz.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(kalendarzLayout);
+            });
+
+            powiadomienia = new Button("Powiadomienia");
+            powiadomienia.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(powiadomieniaLayout);
+            });
+
+            uzytkownikBloki = new Button("Bloki");
+            uzytkownikBloki.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(uzytkownikBlokiLayout);
+            });
+
+            horizontalLayout.addComponents(kalendarz, powiadomienia, uzytkownikBloki);
             addComponents(horizontalLayout, verticalLayout);
         }
     }
@@ -228,7 +262,7 @@ public class LoggedUI extends VerticalLayout {
         potwierdz.addClickListener(event1 -> {
             if (zgloszenieComboBox.getValue() != null) {
                 Zgloszenie zgloszenie = zgloszenieComboBox.getValue();
-                zgloszenie.setZgoda(true);
+                zgloszenie.setZgoda("tak");
                 zgloszenieRepozytorium.save(zgloszenie);
 
                 uzytkownikComboBox.setValue(null);
@@ -243,7 +277,7 @@ public class LoggedUI extends VerticalLayout {
         odrzuc.addClickListener(event1 -> {
             if (zgloszenieComboBox.getValue() != null) {
                 Zgloszenie zgloszenie = zgloszenieComboBox.getValue();
-                zgloszenie.setZgoda(false);
+                zgloszenie.setZgoda("nie");
                 zgloszenieRepozytorium.save(zgloszenie);
 
                 uzytkownikComboBox.setValue(null);
@@ -613,5 +647,51 @@ public class LoggedUI extends VerticalLayout {
         Matcher matcher = pattern.matcher(haslo);
 
         return matcher.matches();
+    }
+
+    private void initKalendarzLayout(){
+
+    }
+
+    private void initPowiadomieniaLayout(){
+
+    }
+
+    private void initUzytkownikBlokiLayout(){
+        uzytkownikBlokiLayout = new VerticalLayout();
+
+        Set<Blok> listaBlokow = new HashSet<>();
+
+        zgloszenieRepozytorium.findAllByUczestnik(uzytkownik)
+                .stream()
+                .filter(z -> z.getZgoda().equals("tak"))
+                .map(z -> z.getKurs().getBlok())
+                .flatMap(List::stream)
+                .forEach(b -> listaBlokow.add(b));
+
+        ComboBox<Blok> blokComboBox = new ComboBox<>("Wybierz blok");
+        blokComboBox.setEmptySelectionAllowed(false);
+        blokComboBox.setDataProvider(DataProvider.ofCollection(listaBlokow));
+        blokComboBox.setItemCaptionGenerator(Blok::getNazwa);
+        blokComboBox.setWidth("250");
+
+        Grid<Zajecia> zajeciaGrid = new Grid<>();
+        zajeciaGrid.addColumn(Zajecia::getId).setCaption("ID").setWidth(70);
+        zajeciaGrid.addColumn(Zajecia::getTemat).setCaption("Temat").setWidth(300);
+        zajeciaGrid.addColumn(Zajecia::getData).setCaption("Data").setWidth(130);
+        zajeciaGrid.addColumn(z -> z.getProwadzacy() != null ? z.getProwadzacy().getLogin() : "").setCaption("Prowadzący").setWidth(150);
+        zajeciaGrid.setWidth("650");
+        zajeciaGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        List<Zajecia> listaZajec = new ArrayList<>();
+        ListDataProvider<Zajecia> provider = DataProvider.ofCollection(listaZajec);
+        zajeciaGrid.setDataProvider(provider);
+
+        blokComboBox.addValueChangeListener(event -> {
+            listaZajec.clear();
+            listaZajec.addAll(event.getValue().getZajecia());
+            provider.refreshAll();
+        });
+
+        uzytkownikBlokiLayout.addComponents(blokComboBox, zajeciaGrid);
     }
 }

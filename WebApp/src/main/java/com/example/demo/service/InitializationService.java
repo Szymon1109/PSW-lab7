@@ -35,8 +35,8 @@ public class InitializationService {
     @PostConstruct
     public void init() {
 
-        Uzytkownik u0 = new Uzytkownik(0L, "123", Hashing.sha512().hashString("123", StandardCharsets.UTF_8).toString(), Typ.ADMIN, "Szymon", "Betlewski", 10);
-        Uzytkownik u1 = new Uzytkownik(0L, "Ala123", Hashing.sha512().hashString("Ala123", StandardCharsets.UTF_8).toString(), Typ.UCZESTNIK, "Ala", "Kowalska", 8);
+        Uzytkownik u0 = new Uzytkownik(0L, "Szymon1104", Hashing.sha512().hashString("Pa$$word1", StandardCharsets.UTF_8).toString(), Typ.ADMIN, "Szymon", "Betlewski", 10);
+        Uzytkownik u1 = new Uzytkownik(0L, "123", Hashing.sha512().hashString("123", StandardCharsets.UTF_8).toString(), Typ.UCZESTNIK, "Ala", "Kowalska", 8);
         Uzytkownik u2 = new Uzytkownik(0L, "Kasia123", Hashing.sha512().hashString("Kasia123", StandardCharsets.UTF_8).toString(), Typ.UCZESTNIK, "Kasia", "Nowak", 7);
         Uzytkownik u3 = new Uzytkownik(0L, "Piotr123", Hashing.sha512().hashString("Piotr123", StandardCharsets.UTF_8).toString(), Typ.UCZESTNIK, "Piotr", "Zieliński", 6);
         Uzytkownik u4 = new Uzytkownik(0L, "Pawel123", Hashing.sha512().hashString("Pawel123", StandardCharsets.UTF_8).toString(), Typ.UCZESTNIK, "Paweł", "Wiśniewski", 9);
@@ -79,11 +79,11 @@ public class InitializationService {
         k1 = kursRepozytorium.save(k1);
         k2 = kursRepozytorium.save(k2);
 
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 20), null, u1, k1));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 21), null, u1, k2));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 22), null, u2, k1));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 23), null, u3, k2));
-        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 24), null, u4, k2));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 20), "tak", u1, k1));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 21), "", u1, k2));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 22), "", u2, k1));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 23), "", u3, k2));
+        zgloszenieRepozytorium.save(new Zgloszenie(0L, LocalDate.of(2019, 6, 24), "", u4, k2));
 
         powiadomienieRepozytorium.save(new Powiadomienie(0L, "Powiadomienie", "Niedługo pierwsze zajęcia z kursu", u1, z1));
         powiadomienieRepozytorium.save(new Powiadomienie(0L, "Powiadomienie", "Niedługo pierwsze zajęcia z kursu", u1, z5));
