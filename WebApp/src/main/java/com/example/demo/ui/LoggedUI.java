@@ -654,7 +654,20 @@ public class LoggedUI extends VerticalLayout {
     }
 
     private void initPowiadomieniaLayout(){
+        powiadomieniaLayout = new VerticalLayout();
 
+        List<Powiadomienie> powiadomienia = powiadomienieRepozytorium.findAllByUzytkownik(uzytkownik);
+
+        Grid<Powiadomienie> powiadomienieGrid = new Grid<>();
+        powiadomienieGrid.addColumn(Powiadomienie::getId).setCaption("ID").setWidth(70);
+        powiadomienieGrid.addColumn(Powiadomienie::getTemat).setCaption("Temat").setWidth(200);
+        powiadomienieGrid.addColumn(Powiadomienie::getTresc).setCaption("Treść").setWidth(330);
+        powiadomienieGrid.addColumn(z -> z.getZajecia().getTemat()).setCaption("Zajęcia").setWidth(300);
+        powiadomienieGrid.setWidth("900");
+        powiadomienieGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        powiadomienieGrid.setDataProvider(DataProvider.ofCollection(powiadomienia));
+
+        powiadomieniaLayout.addComponents(powiadomienieGrid);
     }
 
     private void initUzytkownikBlokiLayout(){
