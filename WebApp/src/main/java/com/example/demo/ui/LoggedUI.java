@@ -10,7 +10,9 @@ import com.vaadin.ui.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -120,7 +122,7 @@ public class LoggedUI extends VerticalLayout {
         Button createButton = new Button("Utwórz");
 
         createButton.addClickListener(event1 -> {
-            if (nameProject.getValue() != "") {
+            if (!nameProject.getValue().equals("")) {
                 if (kursRepozytorium.findAllByNazwa(nameProject.getValue()).isEmpty()) {
                     Kurs kurs = kursRepozytorium.save(
                             new Kurs(0L, nameProject.getValue(), null));
@@ -183,7 +185,7 @@ public class LoggedUI extends VerticalLayout {
 
         Button updateKursButton = new Button("Aktualizuj");
         updateKursButton.addClickListener(event1 -> {
-            if (kursUpdate.getValue() != null && nameKurs.getValue() != "") {
+            if (kursUpdate.getValue() != null && !nameKurs.getValue().equals("")) {
                 Kurs kurs = new Kurs(kursUpdate.getValue().getId(), nameKurs.getValue(), kursUpdate.getValue().getBlok());
 
                 kursRepozytorium.save(kurs);
@@ -260,6 +262,8 @@ public class LoggedUI extends VerticalLayout {
     private void initBlokiLayout() {
         zarzadzanieBlokamiLayout = new VerticalLayout();
 
+        List<Kurs> listaKursow = kursRepozytorium.findAll();
+
         ComboBox<Kurs> kursComboBox = new ComboBox<>("Wybierz kurs");
         kursComboBox.setEmptySelectionAllowed(false);
         kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
@@ -276,6 +280,9 @@ public class LoggedUI extends VerticalLayout {
         blokGrid.setDataProvider(provider);
 
         kursComboBox.addValueChangeListener(event -> {
+            List<Kurs> lista = kursRepozytorium.findAll();
+            kursComboBox.setDataProvider(DataProvider.ofCollection(lista));
+
             listaBlokow.clear();
             if(event.getValue().getBlok() != null) {
                 listaBlokow.addAll(event.getValue().getBlok());
@@ -296,7 +303,6 @@ public class LoggedUI extends VerticalLayout {
                 kurs.setBlok(currentList);
                 kursRepozytorium.save(kurs);
 
-                blokGrid.getSelectedItems().clear();
                 Notification.show("Usunięto blok", "", Notification.Type.HUMANIZED_MESSAGE);
             }
         });
@@ -306,7 +312,7 @@ public class LoggedUI extends VerticalLayout {
 
         Button addButton = new Button("Dodaj blok");
         addButton.addClickListener(event -> {
-            if (nazwaBloku.getValue() != "") {
+            if (!nazwaBloku.getValue().equals("")) {
                 if (blokRepozytorium.findAllByNazwa(nazwaBloku.getValue()).isEmpty()) {
 
                     Blok blok = blokRepozytorium.save(
@@ -344,14 +350,13 @@ public class LoggedUI extends VerticalLayout {
 
         blokUpdate.addValueChangeListener(event -> {
             if(blokUpdate.getValue() != null) {
-                provider.refreshAll();
                 nameBlok.setValue(blokUpdate.getValue().getNazwa());
             }
         });
 
         Button updateBlokButton = new Button("Aktualizuj");
         updateBlokButton.addClickListener(event1 -> {
-            if (blokUpdate.getValue() != null && nameBlok.getValue() != "") {
+            if (blokUpdate.getValue() != null && !nameBlok.getValue().equals("")) {
                 Blok blok = new Blok(blokUpdate.getValue().getId(), nameBlok.getValue(), blokUpdate.getValue().getZajecia());
 
                 blokRepozytorium.save(blok);
@@ -359,8 +364,10 @@ public class LoggedUI extends VerticalLayout {
                 nameBlok.setValue("");
                 blokUpdate.setValue(null);
 
-                blokUpdate.setDataProvider(DataProvider.ofCollection(blokRepozytorium.findAll()));
-                blokGrid.setDataProvider(DataProvider.ofCollection(blokRepozytorium.findAll()));
+                listaBlokow.clear();
+                Set<Blok> zbior = new HashSet<>(kursRepozytorium.findById(kursComboBox.getValue().getId()).get().getBlok());
+                listaBlokow.addAll(zbior);
+                provider.refreshAll();
 
                 Notification.show("Blok został zaktualizowany!", "", Notification.Type.HUMANIZED_MESSAGE);
 
@@ -417,7 +424,6 @@ public class LoggedUI extends VerticalLayout {
                 blok.setZajecia(currentList);
                 blokRepozytorium.save(blok);
 
-                zajeciaGrid.getSelectedItems().clear();
                 Notification.show("Usunięto zajęcia", "", Notification.Type.HUMANIZED_MESSAGE);
             }
         });
@@ -433,7 +439,7 @@ public class LoggedUI extends VerticalLayout {
 
         Button addButton = new Button("Dodaj zajęcia");
         addButton.addClickListener(event -> {
-            if (nazwaZajec.getValue() != null && dataField.getValue() != null && prowadzacyComboBox.getValue() != null) {
+            if (!nazwaZajec.getValue().equals("") && dataField.getValue() != null && prowadzacyComboBox.getValue() != null) {
                 if (zajeciaRepozytorium.findAllByTemat(nazwaZajec.getValue()).isEmpty()) {
 
                     Zajecia zajecia = zajeciaRepozytorium.save(
@@ -462,8 +468,57 @@ public class LoggedUI extends VerticalLayout {
 
         zarzadzanieZajeciamiLayout.addComponents(blokComboBox, zajeciaGrid, deleteButton, label, nazwaZajec, dataField, prowadzacyComboBox, addButton);
 
-        //TODO:
-        //update zajęcia
+        Label empty = new Label();
+
+        TextField nameZajecia = new TextField("Temat zajęć");
+        nameZajecia.setWidth("300");
+        DateField dataZajecia = new DateField("Data zajęć");
+
+        ComboBox<Uzytkownik> prowadzacyZajecia = new ComboBox<>("Wybierz prowadzącego");
+        prowadzacyZajecia.setEmptySelectionAllowed(false);
+        prowadzacyZajecia.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
+        prowadzacyZajecia.setItemCaptionGenerator(Uzytkownik::getLogin);
+
+        ComboBox<Zajecia> zajeciaUpdate = new ComboBox<>("Wybierz zajęcia do aktualizacji");
+        zajeciaUpdate.setEmptySelectionAllowed(false);
+        zajeciaUpdate.setDataProvider(provider);
+        zajeciaUpdate.setItemCaptionGenerator(b -> b.getId().toString());
+        zajeciaUpdate.setWidth("100");
+
+        zajeciaUpdate.addValueChangeListener(event -> {
+            if(zajeciaUpdate.getValue() != null) {
+
+                nameZajecia.setValue(zajeciaUpdate.getValue().getTemat());
+                dataZajecia.setValue(zajeciaUpdate.getValue().getData());
+                prowadzacyZajecia.setValue(zajeciaUpdate.getValue().getProwadzacy());
+            }
+        });
+
+        Button updateZajecia = new Button("Zaktualizuj zajęcia");
+        updateZajecia.addClickListener(event -> {
+            if (!nameZajecia.getValue().equals("") && dataZajecia.getValue() != null && prowadzacyZajecia.getValue() != null) {
+
+                Zajecia zajecia = new Zajecia(zajeciaUpdate.getValue().getId(), nameZajecia.getValue(),
+                        dataZajecia.getValue(), prowadzacyZajecia.getValue());
+
+                zajeciaRepozytorium.save(zajecia);
+
+                zajeciaUpdate.setValue(null);
+                nameZajecia.setValue("");
+                dataZajecia.setValue(null);
+                prowadzacyZajecia.setValue(null);
+
+                listaZajec.clear();
+                listaZajec.addAll(blokRepozytorium.findById(blokComboBox.getValue().getId()).get().getZajecia());
+                provider.refreshAll();
+
+                Notification.show("Zaktualizowano zajęcia", "", Notification.Type.HUMANIZED_MESSAGE);
+
+            } else
+                Notification.show("Nie podano wszystkich danych!", "", Notification.Type.ERROR_MESSAGE);
+        });
+
+        zarzadzanieZajeciamiLayout.addComponents(empty, zajeciaUpdate, nameZajecia, dataZajecia, prowadzacyZajecia, updateZajecia);
     }
 
     private void initProwadzacyLayout(){
@@ -535,7 +590,7 @@ public class LoggedUI extends VerticalLayout {
                 listaProwadzacych.remove(uzytkownik);
 
                 List<Zajecia> zajecia = zajeciaRepozytorium.findAllByProwadzacy(uzytkownik);
-                zajecia.stream().forEach(z -> z.setProwadzacy(null));
+                zajecia.forEach(z -> z.setProwadzacy(null));
 
                 zajeciaRepozytorium.saveAll(zajecia);
                 uzytkownikRepozytorium.delete(uzytkownik);
