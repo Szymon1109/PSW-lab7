@@ -36,7 +36,7 @@ public class InitializationService {
     public void init() {
 
         Uzytkownik u0 = new Uzytkownik(0L, "Szymon1104", Hashing.sha512().hashString("Pa$$word1", StandardCharsets.UTF_8).toString(), Typ.ADMIN, "Szymon", "Betlewski", 10);
-        Uzytkownik u1 = new Uzytkownik(0L, "123", Hashing.sha512().hashString("123", StandardCharsets.UTF_8).toString(), Typ.UCZESTNIK, "Ala", "Kowalska", 8);
+        Uzytkownik u1 = new Uzytkownik(0L, "Ala123", Hashing.sha512().hashString("Ala123", StandardCharsets.UTF_8).toString(), Typ.UCZESTNIK, "Ala", "Kowalska", 8);
         Uzytkownik u2 = new Uzytkownik(0L, "Kasia123", Hashing.sha512().hashString("Kasia123", StandardCharsets.UTF_8).toString(), Typ.UCZESTNIK, "Kasia", "Nowak", 7);
         Uzytkownik u3 = new Uzytkownik(0L, "Piotr123", Hashing.sha512().hashString("Piotr123", StandardCharsets.UTF_8).toString(), Typ.UCZESTNIK, "Piotr", "Zieliński", 6);
         Uzytkownik u4 = new Uzytkownik(0L, "Pawel123", Hashing.sha512().hashString("Pawel123", StandardCharsets.UTF_8).toString(), Typ.UCZESTNIK, "Paweł", "Wiśniewski", 9);

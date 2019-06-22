@@ -138,7 +138,6 @@ public class LoginSignUpUI extends UI {
                         wyloguj.addClickListener(event1 -> {
                             root.removeAllComponents();
                             init(null);
-                            logowanie.click();
                         });
 
                         root.addComponent(wyloguj);

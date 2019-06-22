@@ -9,15 +9,12 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class LoggedUI extends VerticalLayout {
+public class LoggedUI extends VerticalLayout{
 
     private BlokRepozytorium blokRepozytorium;
     private KursRepozytorium kursRepozytorium;
@@ -34,7 +31,6 @@ public class LoggedUI extends VerticalLayout {
     private Button zarzadzanieBlokami;
     private Button zarzadzanieZajeciami;
     private Button zarzadzanieProwadzacymi;
-    private Button kalendarz;
     private Button powiadomienia;
     private Button uzytkownikBloki;
 
@@ -43,15 +39,12 @@ public class LoggedUI extends VerticalLayout {
     private VerticalLayout zarzadzanieBlokamiLayout;
     private VerticalLayout zarzadzanieZajeciamiLayout;
     private VerticalLayout zarzadzanieProwadzacymiLayout;
-    private VerticalLayout kalendarzLayout;
     private VerticalLayout powiadomieniaLayout;
     private VerticalLayout uzytkownikBlokiLayout;
 
     private List<Kurs> listaKursow = new ArrayList<>();
     private List<Uzytkownik> listaUzytkownikow = new ArrayList<>();
     private List<Uzytkownik> listaProwadzacych = new ArrayList<>();
-    private List<Zgloszenie> zgloszenia = new ArrayList<>();
-    private List<Zajecia> listaZajec = new ArrayList<>();
 
     public LoggedUI(Uzytkownik uzytkownik, BlokRepozytorium blokRepozytorium, KursRepozytorium kursRepozytorium,
                     PowiadomienieRepozytorium powiadomienieRepozytorium, UzytkownikRepozytorium uzytkownikRepozytorium,
@@ -122,16 +115,9 @@ public class LoggedUI extends VerticalLayout {
         }
 
         else if(uzytkownik.getTyp().equals(Typ.UCZESTNIK)) {
-
-            initKalendarzLayout();
             initPowiadomieniaLayout();
             initUzytkownikBlokiLayout();
 
-            kalendarz = new Button("Kalendarz");
-            kalendarz.addClickListener(event -> {
-                verticalLayout.removeAllComponents();
-                verticalLayout.addComponent(kalendarzLayout);
-            });
 
             powiadomienia = new Button("Powiadomienia");
             powiadomienia.addClickListener(event -> {
@@ -145,7 +131,7 @@ public class LoggedUI extends VerticalLayout {
                 verticalLayout.addComponent(uzytkownikBlokiLayout);
             });
 
-            horizontalLayout.addComponents(kalendarz, powiadomienia, uzytkownikBloki);
+            horizontalLayout.addComponents(powiadomienia, uzytkownikBloki);
             addComponents(horizontalLayout, verticalLayout);
         }
     }
@@ -255,7 +241,7 @@ public class LoggedUI extends VerticalLayout {
         uzytkownikComboBox.addValueChangeListener(event -> zgloszenieComboBox.setItems(
                 zgloszenieRepozytorium.findAllByUczestnik(uzytkownikComboBox.getValue())
                         .stream()
-                        .filter(z -> z.getZgoda() == null)
+                        .filter(z -> z.getZgoda().equals(""))
                         .collect(Collectors.toList())));
 
         Button potwierdz = new Button("Potwierdź");
@@ -470,6 +456,14 @@ public class LoggedUI extends VerticalLayout {
         prowadzacyComboBox.setEmptySelectionAllowed(false);
         prowadzacyComboBox.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
         prowadzacyComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
+        prowadzacyComboBox.addValueChangeListener(event -> {
+            prowadzacyComboBox.setDataProvider(
+                    DataProvider.ofCollection(
+                            listaProwadzacych = uzytkownikRepozytorium.findAll()
+                                    .stream()
+                                    .filter(u -> u.getTyp() == Typ.PROWADZACY)
+                                    .collect(Collectors.toList())));
+        });
 
         Button addButton = new Button("Dodaj zajęcia");
         addButton.addClickListener(event -> {
@@ -512,6 +506,14 @@ public class LoggedUI extends VerticalLayout {
         prowadzacyZajecia.setEmptySelectionAllowed(false);
         prowadzacyZajecia.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
         prowadzacyZajecia.setItemCaptionGenerator(Uzytkownik::getLogin);
+        prowadzacyZajecia.addValueChangeListener(event -> {
+            prowadzacyZajecia.setDataProvider(
+                    DataProvider.ofCollection(
+                            listaProwadzacych = uzytkownikRepozytorium.findAll()
+                                    .stream()
+                                    .filter(u -> u.getTyp() == Typ.PROWADZACY)
+                                    .collect(Collectors.toList())));
+        });
 
         ComboBox<Zajecia> zajeciaUpdate = new ComboBox<>("Wybierz zajęcia do aktualizacji");
         zajeciaUpdate.setEmptySelectionAllowed(false);
@@ -647,10 +649,6 @@ public class LoggedUI extends VerticalLayout {
         Matcher matcher = pattern.matcher(haslo);
 
         return matcher.matches();
-    }
-
-    private void initKalendarzLayout(){
-
     }
 
     private void initPowiadomieniaLayout(){
