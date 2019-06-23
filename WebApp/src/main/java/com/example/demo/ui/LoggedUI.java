@@ -33,6 +33,8 @@ public class LoggedUI extends VerticalLayout{
     private Button zarzadzanieProwadzacymi;
     private Button powiadomienia;
     private Button uzytkownikBloki;
+    private Button listaZajecProwadzacego;
+    private Button zarzadzaniePowiadomieniami;
 
     private VerticalLayout utworzKursLayout;
     private VerticalLayout zgodyLayout;
@@ -133,7 +135,37 @@ public class LoggedUI extends VerticalLayout{
 
             horizontalLayout.addComponents(powiadomienia, uzytkownikBloki);
             addComponents(horizontalLayout, verticalLayout);
+        } else if(uzytkownik.getTyp().equals(Typ.PROWADZACY)) {
+            VerticalLayout zajeciaLayout = initTabelaZajec();
+
+            listaZajecProwadzacego = new Button("Lista zajęć");
+            listaZajecProwadzacego.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(zajeciaLayout);
+            });
+
+            zarzadzaniePowiadomieniami = new Button("Powiadomienia");
+            zarzadzaniePowiadomieniami.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+            });
+
+            horizontalLayout.addComponents(listaZajecProwadzacego, zarzadzaniePowiadomieniami);
+            addComponents(horizontalLayout, verticalLayout);
         }
+    }
+
+    private VerticalLayout initTabelaZajec() {
+        List<Zajecia> listaZajecia = zajeciaRepozytorium.findAllByProwadzacy(uzytkownik);
+
+        VerticalLayout layout = new VerticalLayout();
+        Grid<Zajecia> tabelaZajec = new Grid<>();
+        tabelaZajec.setItems(listaZajecia);
+        tabelaZajec.addColumn(Zajecia::getId).setCaption("Id");
+        tabelaZajec.addColumn(Zajecia::getTemat).setCaption("Temat");
+        tabelaZajec.addColumn(Zajecia::getData).setCaption("Data");
+
+        layout.addComponent(tabelaZajec);
+        return layout;
     }
 
     private void initKursyLayout() {
