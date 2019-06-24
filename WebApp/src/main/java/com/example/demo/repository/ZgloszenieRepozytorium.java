@@ -11,6 +11,7 @@ import java.util.List;
 public interface ZgloszenieRepozytorium extends JpaRepository<Zgloszenie, Long> {
 
     List<Zgloszenie> findAllByUczestnik(Uzytkownik uzytkownik);
+    List<Zgloszenie> findAllByKurs(Kurs kurs);
 
     @Transactional
     void deleteAllByKurs(Kurs kurs);

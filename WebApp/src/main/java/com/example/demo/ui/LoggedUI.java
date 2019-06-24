@@ -7,6 +7,7 @@ import com.google.common.hash.Hashing;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
+import com.vaadin.server.Sizeable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -162,8 +163,6 @@ public class LoggedUI extends VerticalLayout{
                 .filter(z -> powiadomienieRepozytorium.findAllByZajecia(z) != null)
                 .collect(Collectors.toList());
 
-        System.out.println(listaZajecia);
-
         VerticalLayout layout = new VerticalLayout();
 
         ComboBox<Zajecia> powiadomienieZajec = new ComboBox<>("Zajęcia");
@@ -178,13 +177,69 @@ public class LoggedUI extends VerticalLayout{
 
         powiadomienieZajec.addValueChangeListener(event -> {
             List<Powiadomienie> listaPowiadomien = powiadomienieRepozytorium.findAllByZajecia(event.getValue());
-
             tabelaPowiadomien.setItems(listaPowiadomien);
         });
 
-        layout.addComponents(powiadomienieZajec, tabelaPowiadomien);
+        Button wyslijPowiadomienie = new Button("Wyślij powiadomienie");
+        wyslijPowiadomienie.addClickListener(event -> initWindow(powiadomienieZajec.getValue()));
+
+        layout.addComponents(powiadomienieZajec, tabelaPowiadomien, wyslijPowiadomienie);
 
         return layout;
+    }
+
+    private void initWindow(Zajecia zajecia) {
+        Window windowAddNotification = new Window("Dodaj powiadomienie");
+        windowAddNotification.setWidth(400.0f, Sizeable.Unit.PIXELS);
+        windowAddNotification.setModal(true);
+        windowAddNotification.setResizable(false);
+        windowAddNotification.center();
+        windowAddNotification.setDraggable(true);
+
+        FormLayout formWindowNotification = new FormLayout();
+        formWindowNotification.setMargin(true);
+
+        ComboBox<Zajecia> zajeciaCombobox = new ComboBox<>("Zajęcia");
+        zajeciaCombobox.setItems(zajeciaRepozytorium.findAllByProwadzacy(uzytkownik));
+        zajeciaCombobox.setItemCaptionGenerator(Zajecia::getTemat);
+
+        TextField temat = new TextField("Temat");
+        TextArea tresc = new TextArea("Treść");
+        ComboBox<Uzytkownik> uzytkownikCombobox = new ComboBox<>("Użytkownik");
+        uzytkownikCombobox.setItemCaptionGenerator(Uzytkownik::getLogin);
+
+        zajeciaCombobox.addValueChangeListener(event -> {
+            Kurs kurs = kursRepozytorium.findAllByBlok(blokRepozytorium.findAllByZajecia(zajeciaCombobox.getValue()).get(0)).get(0);
+
+            List<Uzytkownik> listaUzytkownikow = zgloszenieRepozytorium.findAllByKurs(kurs)
+                    .stream()
+                    .map(z -> z.getUczestnik())
+                    .collect(Collectors.toList());
+
+            uzytkownikCombobox.setItems(listaUzytkownikow);
+        });
+
+        Button wyslij = new Button("Wyślij");
+        wyslij.addClickListener(event -> {
+            if(temat.getValue().equals(""))
+                Notification.show("Wpisz temat", Notification.Type.ERROR_MESSAGE);
+            else if(uzytkownikCombobox.getValue() == null)
+                Notification.show("Wprowadź użytkownika", Notification.Type.ERROR_MESSAGE);
+            else if(zajeciaCombobox.getValue() == null)
+                Notification.show("Wprowadź zajęcia", Notification.Type.ERROR_MESSAGE);
+            else {
+                Powiadomienie nowePowiadomienie = new Powiadomienie(0l, temat.getValue(), tresc.getValue(), uzytkownikCombobox.getValue(), zajeciaCombobox.getValue());
+                powiadomienieRepozytorium.save(nowePowiadomienie);
+                Notification.show("Wysłano powiadomienie", "", Notification.Type.HUMANIZED_MESSAGE);
+                temat.clear();
+                tresc.clear();
+            }
+        });
+
+        formWindowNotification.addComponents(zajeciaCombobox, temat, tresc, uzytkownikCombobox, wyslij);
+
+        windowAddNotification.setContent(formWindowNotification);
+        getUI().addWindow(windowAddNotification);
     }
 
     private VerticalLayout initTabelaZajec() {
