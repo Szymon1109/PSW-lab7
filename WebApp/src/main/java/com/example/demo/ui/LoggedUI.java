@@ -137,6 +137,7 @@ public class LoggedUI extends VerticalLayout{
             addComponents(horizontalLayout, verticalLayout);
         } else if(uzytkownik.getTyp().equals(Typ.PROWADZACY)) {
             VerticalLayout zajeciaLayout = initTabelaZajec();
+            VerticalLayout powiadomieniaLayout = initZarzadzaniePowiadomieniamiLayout();
 
             listaZajecProwadzacego = new Button("Lista zajęć");
             listaZajecProwadzacego.addClickListener(event -> {
@@ -147,6 +148,7 @@ public class LoggedUI extends VerticalLayout{
             zarzadzaniePowiadomieniami = new Button("Powiadomienia");
             zarzadzaniePowiadomieniami.addClickListener(event -> {
                 verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(powiadomieniaLayout);
             });
 
             horizontalLayout.addComponents(listaZajecProwadzacego, zarzadzaniePowiadomieniami);
@@ -154,10 +156,42 @@ public class LoggedUI extends VerticalLayout{
         }
     }
 
+    private VerticalLayout initZarzadzaniePowiadomieniamiLayout() {
+        List<Zajecia> listaZajecia = zajeciaRepozytorium.findAllByProwadzacy(uzytkownik);
+        listaZajecia = listaZajecia.stream()
+                .filter(z -> powiadomienieRepozytorium.findAllByZajecia(z) != null)
+                .collect(Collectors.toList());
+
+        System.out.println(listaZajecia);
+
+        VerticalLayout layout = new VerticalLayout();
+
+        ComboBox<Zajecia> powiadomienieZajec = new ComboBox<>("Zajęcia");
+        powiadomienieZajec.setItems(listaZajecia);
+        powiadomienieZajec.setItemCaptionGenerator(Zajecia::getTemat);
+
+        Grid<Powiadomienie> tabelaPowiadomien = new Grid<>();
+        tabelaPowiadomien.addColumn(Powiadomienie::getId).setCaption("Id");
+        tabelaPowiadomien.addColumn(Powiadomienie::getTemat).setCaption("Temat");
+        tabelaPowiadomien.addColumn(Powiadomienie::getTresc).setCaption("Tresc");
+        tabelaPowiadomien.addColumn(p -> p.getUzytkownik().getLogin()).setCaption("Uzytkownik");
+
+        powiadomienieZajec.addValueChangeListener(event -> {
+            List<Powiadomienie> listaPowiadomien = powiadomienieRepozytorium.findAllByZajecia(event.getValue());
+
+            tabelaPowiadomien.setItems(listaPowiadomien);
+        });
+
+        layout.addComponents(powiadomienieZajec, tabelaPowiadomien);
+
+        return layout;
+    }
+
     private VerticalLayout initTabelaZajec() {
         List<Zajecia> listaZajecia = zajeciaRepozytorium.findAllByProwadzacy(uzytkownik);
 
         VerticalLayout layout = new VerticalLayout();
+
         Grid<Zajecia> tabelaZajec = new Grid<>();
         tabelaZajec.setItems(listaZajecia);
         tabelaZajec.addColumn(Zajecia::getId).setCaption("Id");
