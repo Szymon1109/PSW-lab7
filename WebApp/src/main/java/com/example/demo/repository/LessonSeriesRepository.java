@@ -7,8 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BlokRepozytorium extends JpaRepository<Blok, Long> {
+public interface LessonSeriesRepository extends JpaRepository<LessonSeries, Long> {
 
-    List<Blok> findAllByNazwa(String nazwa);
-    List<Blok> findAllByZajecia(Zajecia zajecia);
+    List<LessonSeries> findAllByName(String name);
+
+    List<LessonSeries> findAllByLessonsContains(Lesson lesson);
+
 }

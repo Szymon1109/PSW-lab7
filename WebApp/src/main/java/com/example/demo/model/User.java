@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.example.demo.util.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,15 +14,20 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Uzytkownik {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String login;
-    private String haslo;
-    private Typ typ;
-    private String imie;
-    private String nazwisko;
-    private Integer aktywnosc;
+
+    private String password;
+
+    private UserType userType;
+
+    private String firstName;
+
+    private String lastName;
+
 }

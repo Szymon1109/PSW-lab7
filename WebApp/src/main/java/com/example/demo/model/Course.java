@@ -11,13 +11,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Kurs {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nazwa;
+
+    private String name;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Blok> blok;
+    private List<LessonSeries> lessonSeriesList;
+
 }

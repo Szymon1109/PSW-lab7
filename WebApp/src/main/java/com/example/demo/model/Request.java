@@ -11,17 +11,19 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Zgloszenie {
+public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDate data;
-    private String zgoda;
+
+    private LocalDate date;
+
+    private String accepted;
 
     @ManyToOne
-    private Uzytkownik uczestnik;
+    private User student;
 
     @ManyToOne
-    private Kurs kurs;
+    private Course course;
 }

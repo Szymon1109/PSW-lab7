@@ -8,11 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface ZgloszenieRepozytorium extends JpaRepository<Zgloszenie, Long> {
+public interface RequestRepository extends JpaRepository<Request, Long> {
 
-    List<Zgloszenie> findAllByUczestnik(Uzytkownik uzytkownik);
-    List<Zgloszenie> findAllByKurs(Kurs kurs);
+    List<Request> findAllByStudent(User student);
+
+    List<Request> findAllByCourse(Course course);
 
     @Transactional
-    void deleteAllByKurs(Kurs kurs);
+    void deleteAllByCourse(Course course);
+
 }

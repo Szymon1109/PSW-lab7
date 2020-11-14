@@ -7,8 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ZajeciaRepozytorium extends JpaRepository<Zajecia, Long> {
+public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
-    List<Zajecia> findAllByTemat(String temat);
-    List<Zajecia> findAllByProwadzacy(Uzytkownik uzytkownik);
+    List<Lesson> findAllBySubject(String subject);
+
+    List<Lesson> findAllByTrainer(User trainer);
+
 }

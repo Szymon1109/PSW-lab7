@@ -10,17 +10,20 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Powiadomienie {
+public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String temat;
-    private String tresc;
+
+    private String subject;
+
+    private String text;
 
     @ManyToOne
-    private Uzytkownik uzytkownik;
+    private User student;
 
     @ManyToOne
-    private Zajecia zajecia;
+    private Lesson lesson;
+
 }

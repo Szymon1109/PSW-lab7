@@ -5,19 +5,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Blok {
+public class Lesson {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nazwa;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Zajecia> zajecia;
+    private String subject;
+
+    private LocalDate date;
+
+    @ManyToOne
+    private User trainer;
+
 }
