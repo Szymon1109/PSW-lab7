@@ -18,7 +18,7 @@ import static com.example.demo.util.DataUtils.checkPassword;
 
 @SpringUI
 @Theme("mytheme")
-public class LoginSignUpUI extends UI {
+public class StartView extends UI {
 
     private LessonSeriesRepository lessonSeriesRepository;
     private CourseRepository courseRepository;
@@ -28,12 +28,12 @@ public class LoginSignUpUI extends UI {
     private RequestRepository requestRepository;
 
     @Autowired
-    public LoginSignUpUI(LessonSeriesRepository lessonSeriesRepository,
-                         CourseRepository courseRepository,
-                         MessageRepository messageRepository,
-                         UserRepository userRepository,
-                         LessonRepository lessonRepository,
-                         RequestRepository requestRepository) {
+    public StartView(LessonSeriesRepository lessonSeriesRepository,
+                     CourseRepository courseRepository,
+                     MessageRepository messageRepository,
+                     UserRepository userRepository,
+                     LessonRepository lessonRepository,
+                     RequestRepository requestRepository) {
         this.lessonSeriesRepository = lessonSeriesRepository;
         this.courseRepository = courseRepository;
         this.messageRepository = messageRepository;
@@ -85,14 +85,12 @@ public class LoginSignUpUI extends UI {
             login.addClickListener(event -> {
                 Optional<User> optionalUser = userRepository.findByLogin(loginTextField.getValue());
                 if (optionalUser.isPresent()) {
+                    User user = optionalUser.get();
                     String givenPassword = Hashing.sha512().hashString(passwordField.getValue(), StandardCharsets.UTF_8).toString();
-                    if (optionalUser.get().getPassword().equals(givenPassword)) {
+                    if (user.getPassword().equals(givenPassword)) {
                         Notification.show("Logowanie udane!", "", Notification.Type.HUMANIZED_MESSAGE);
                         root.removeAllComponents();
-                        root.addComponent(
-                                new LoggedUI(optionalUser.get(), lessonSeriesRepository, courseRepository,
-                                        messageRepository, userRepository, lessonRepository, requestRepository));
-
+                        openViewForLoggedUser(user);
                         Button logout = new Button("Wyloguj");
                         logout.addClickListener(event1 -> {
                             root.removeAllComponents();
@@ -109,6 +107,24 @@ public class LoginSignUpUI extends UI {
                 }
             });
         });
+    }
+
+    private void openViewForLoggedUser(User user) {
+        if (user.getUserType().equals(UserType.ADMIN)) {
+            AdminView adminView = new AdminView(user, lessonSeriesRepository,
+                    courseRepository, userRepository, lessonRepository, requestRepository);
+            root.addComponent(adminView);
+
+        } else if (user.getUserType().equals(UserType.TRAINER)) {
+            TrainerView trainerView = new TrainerView(user, lessonSeriesRepository,
+                    courseRepository, messageRepository, lessonRepository, requestRepository);
+            root.addComponent(trainerView);
+
+        } else if (user.getUserType().equals(UserType.STUDENT)) {
+            StudentView studentView = new StudentView(user,
+                    courseRepository, messageRepository, requestRepository);
+            root.addComponent(studentView);
+        }
     }
 
     private void registration() {
