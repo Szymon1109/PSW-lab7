@@ -3,6 +3,7 @@ package com.example.demo.ui;
 import com.example.demo.model.*;
 
 import com.example.demo.repository.*;
+import com.example.demo.util.UserType;
 import com.google.common.hash.Hashing;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
@@ -10,185 +11,703 @@ import com.vaadin.ui.*;
 import com.vaadin.server.Sizeable;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class LoggedUI extends VerticalLayout{
+import static com.example.demo.util.DataUtils.checkPassword;
 
-    private BlokRepozytorium blokRepozytorium;
-    private KursRepozytorium kursRepozytorium;
-    private PowiadomienieRepozytorium powiadomienieRepozytorium;
-    private UzytkownikRepozytorium uzytkownikRepozytorium;
-    private ZajeciaRepozytorium zajeciaRepozytorium;
-    private ZgloszenieRepozytorium zgloszenieRepozytorium;
+public class LoggedUI extends VerticalLayout {
 
-    private Uzytkownik uzytkownik;
-    private HorizontalLayout horizontalLayout;
+    private LessonSeriesRepository lessonSeriesRepository;
+    private CourseRepository courseRepository;
+    private MessageRepository messageRepository;
+    private UserRepository userRepository;
+    private LessonRepository lessonRepository;
+    private RequestRepository requestRepository;
+
     private VerticalLayout verticalLayout;
-    private Button utworzKurs;
-    private Button zarzadzanieZgodami;
-    private Button zarzadzanieBlokami;
-    private Button zarzadzanieZajeciami;
-    private Button zarzadzanieProwadzacymi;
-    private Button powiadomienia;
-    private Button uzytkownikBloki;
-    private Button listaZajecProwadzacego;
-    private Button zarzadzaniePowiadomieniami;
+    private VerticalLayout coursesLayout;
+    private VerticalLayout requestsLayout;
+    private VerticalLayout lessonSeriesLayout;
+    private VerticalLayout lessonsLayout;
+    private VerticalLayout trainersLayout;
+    private VerticalLayout messagesLayout;
 
-    private VerticalLayout utworzKursLayout;
-    private VerticalLayout zgodyLayout;
-    private VerticalLayout zarzadzanieBlokamiLayout;
-    private VerticalLayout zarzadzanieZajeciamiLayout;
-    private VerticalLayout zarzadzanieProwadzacymiLayout;
-    private VerticalLayout powiadomieniaLayout;
-    private VerticalLayout uzytkownikBlokiLayout;
+    private User currentUser;
+    private List<Course> courseList = new ArrayList<>();
+    private List<User> studentList = new ArrayList<>();
+    private List<User> trainerList = new ArrayList<>();
 
-    private List<Kurs> listaKursow = new ArrayList<>();
-    private List<Uzytkownik> listaUzytkownikow = new ArrayList<>();
-    private List<Uzytkownik> listaProwadzacych = new ArrayList<>();
+    public LoggedUI(User currentUser, LessonSeriesRepository lessonSeriesRepository,
+                    CourseRepository courseRepository, MessageRepository messageRepository,
+                    UserRepository userRepository, LessonRepository lessonRepository,
+                    RequestRepository requestRepository) {
+        this.currentUser = currentUser;
+        this.lessonSeriesRepository = lessonSeriesRepository;
+        this.courseRepository = courseRepository;
+        this.messageRepository = messageRepository;
+        this.userRepository = userRepository;
+        this.lessonRepository = lessonRepository;
+        this.requestRepository = requestRepository;
 
-    public LoggedUI(Uzytkownik uzytkownik, BlokRepozytorium blokRepozytorium, KursRepozytorium kursRepozytorium,
-                    PowiadomienieRepozytorium powiadomienieRepozytorium, UzytkownikRepozytorium uzytkownikRepozytorium,
-                    ZajeciaRepozytorium zajeciaRepozytorium, ZgloszenieRepozytorium zgloszenieRepozytorium) {
+        HorizontalLayout welcomeLayout = new HorizontalLayout();
+        String welcomeTitle = "Zalogowano jako: " + currentUser.getFirstName() + " "
+                + currentUser.getLastName() + " | " + currentUser.getUserType().roleName;
+        Label label = new Label(welcomeTitle);
+        welcomeLayout.addComponents(label);
 
-        this.uzytkownik = uzytkownik;
-        this.blokRepozytorium = blokRepozytorium;
-        this.kursRepozytorium = kursRepozytorium;
-        this.powiadomienieRepozytorium = powiadomienieRepozytorium;
-        this.uzytkownikRepozytorium = uzytkownikRepozytorium;
-        this.zajeciaRepozytorium = zajeciaRepozytorium;
-        this.zgloszenieRepozytorium = zgloszenieRepozytorium;
-
-        horizontalLayout = new HorizontalLayout();
+        HorizontalLayout horizontalWelcomeLayout = new HorizontalLayout();
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
         verticalLayout = new VerticalLayout();
 
-        if(uzytkownik.getTyp().equals(Typ.ADMIN)) {
-            listaKursow = kursRepozytorium.findAll();
-
-            listaUzytkownikow = uzytkownikRepozytorium.findAll()
+        if (currentUser.getUserType().equals(UserType.ADMIN)) {
+            courseList = courseRepository.findAll();
+            studentList = userRepository.findAll()
                     .stream()
-                    .filter(u -> u.getTyp() == Typ.UCZESTNIK)
+                    .filter(u -> u.getUserType().equals(UserType.STUDENT))
+                    .collect(Collectors.toList());
+            trainerList = userRepository.findAll()
+                    .stream()
+                    .filter(u -> u.getUserType().equals(UserType.TRAINER))
                     .collect(Collectors.toList());
 
-            listaProwadzacych = uzytkownikRepozytorium.findAll()
-                    .stream()
-                    .filter(u -> u.getTyp() == Typ.PROWADZACY)
-                    .collect(Collectors.toList());
+            initCoursesLayout();
+            initRequestsLayout();
+            initLessonSeriesLayout();
+            initLessonsLayout();
+            initTrainersLayout();
 
-            initKursyLayout();
-            initZgodaLayout();
-            initBlokiLayout();
-            initZajeciaLayout();
-            initProwadzacyLayout();
-
-            utworzKurs = new Button("Kursy");
-            utworzKurs.addClickListener(event -> {
+            Button courses = new Button("Kursy");
+            courses.addClickListener(event -> {
                 verticalLayout.removeAllComponents();
-                verticalLayout.addComponent(utworzKursLayout);
+                verticalLayout.addComponent(coursesLayout);
             });
 
-            zarzadzanieZgodami = new Button("Zgłoszenia");
-            zarzadzanieZgodami.addClickListener(event -> {
+            Button requests = new Button("Zgłoszenia");
+            requests.addClickListener(event -> {
                 verticalLayout.removeAllComponents();
-                verticalLayout.addComponent(zgodyLayout);
+                verticalLayout.addComponent(requestsLayout);
             });
 
-            zarzadzanieBlokami = new Button("Bloki");
-            zarzadzanieBlokami.addClickListener(event -> {
+            Button lessonSeries = new Button("Bloki");
+            lessonSeries.addClickListener(event -> {
                 verticalLayout.removeAllComponents();
-                verticalLayout.addComponent(zarzadzanieBlokamiLayout);
+                verticalLayout.addComponent(lessonSeriesLayout);
             });
 
-            zarzadzanieZajeciami = new Button("Zajęcia");
-            zarzadzanieZajeciami.addClickListener(event -> {
+            Button lessons = new Button("Zajęcia");
+            lessons.addClickListener(event -> {
                 verticalLayout.removeAllComponents();
-                verticalLayout.addComponent(zarzadzanieZajeciamiLayout);
+                verticalLayout.addComponent(lessonsLayout);
             });
 
-            zarzadzanieProwadzacymi = new Button("Prowadzący");
-            zarzadzanieProwadzacymi.addClickListener(event -> {
+            Button trainers = new Button("Prowadzący");
+            trainers.addClickListener(event -> {
                 verticalLayout.removeAllComponents();
-                verticalLayout.addComponent(zarzadzanieProwadzacymiLayout);
+                verticalLayout.addComponent(trainersLayout);
             });
 
-            horizontalLayout.addComponents(zarzadzanieZgodami, utworzKurs, zarzadzanieBlokami, zarzadzanieZajeciami, zarzadzanieProwadzacymi);
-            addComponents(horizontalLayout, verticalLayout);
+            horizontalLayout.addComponents(requests, courses, lessonSeries, lessons, trainers);
+
+        } else if (currentUser.getUserType().equals(UserType.STUDENT)) {
+            initMessagesForStudentLayout();
+            initLessonSeriesForStudentLayout();
+            initRequestsForStudentLayout();
+
+            Button messages = new Button("Powiadomienia");
+            messages.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(messagesLayout);
+            });
+
+            Button lessonSeries = new Button("Bloki");
+            lessonSeries.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(lessonSeriesLayout);
+            });
+
+            Button requests = new Button("Zgłoszenia");
+            requests.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(requestsLayout);
+            });
+
+            horizontalLayout.addComponents(messages, lessonSeries, requests);
+
+        } else if (currentUser.getUserType().equals(UserType.TRAINER)) {
+            initLessonsForTrainerLayout();
+            initMessagesForTrainerLayout();
+
+            Button lessons = new Button("Lista zajęć");
+            lessons.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(lessonsLayout);
+            });
+
+            Button messages = new Button("Powiadomienia");
+            messages.addClickListener(event -> {
+                verticalLayout.removeAllComponents();
+                verticalLayout.addComponent(messagesLayout);
+            });
+
+            horizontalLayout.addComponents(lessons, messages);
         }
-
-        else if(uzytkownik.getTyp().equals(Typ.UCZESTNIK)) {
-            initPowiadomieniaLayout();
-            initUzytkownikBlokiLayout();
-
-
-            powiadomienia = new Button("Powiadomienia");
-            powiadomienia.addClickListener(event -> {
-                verticalLayout.removeAllComponents();
-                verticalLayout.addComponent(powiadomieniaLayout);
-            });
-
-            uzytkownikBloki = new Button("Bloki");
-            uzytkownikBloki.addClickListener(event -> {
-                verticalLayout.removeAllComponents();
-                verticalLayout.addComponent(uzytkownikBlokiLayout);
-            });
-
-            horizontalLayout.addComponents(powiadomienia, uzytkownikBloki);
-            addComponents(horizontalLayout, verticalLayout);
-        } else if(uzytkownik.getTyp().equals(Typ.PROWADZACY)) {
-            VerticalLayout zajeciaLayout = initTabelaZajec();
-            VerticalLayout powiadomieniaLayout = initZarzadzaniePowiadomieniamiLayout();
-
-            listaZajecProwadzacego = new Button("Lista zajęć");
-            listaZajecProwadzacego.addClickListener(event -> {
-                verticalLayout.removeAllComponents();
-                verticalLayout.addComponent(zajeciaLayout);
-            });
-
-            zarzadzaniePowiadomieniami = new Button("Powiadomienia");
-            zarzadzaniePowiadomieniami.addClickListener(event -> {
-                verticalLayout.removeAllComponents();
-                verticalLayout.addComponent(powiadomieniaLayout);
-            });
-
-            horizontalLayout.addComponents(listaZajecProwadzacego, zarzadzaniePowiadomieniami);
-            addComponents(horizontalLayout, verticalLayout);
-        }
+        addComponents(welcomeLayout, horizontalWelcomeLayout, horizontalLayout, verticalLayout);
     }
 
-    private VerticalLayout initZarzadzaniePowiadomieniamiLayout() {
-        List<Zajecia> listaZajecia = zajeciaRepozytorium.findAllByProwadzacy(uzytkownik);
-        listaZajecia = listaZajecia.stream()
-                .filter(z -> powiadomienieRepozytorium.findAllByZajecia(z) != null)
-                .collect(Collectors.toList());
+    private void initCoursesLayout() {
+        coursesLayout = new VerticalLayout();
+        TextField courseName = new TextField("Nazwa");
+        Button addButton = new Button("Utwórz");
 
-        VerticalLayout layout = new VerticalLayout();
+        addButton.addClickListener(event1 -> {
+            if (!courseName.getValue().equals("")) {
+                if (courseRepository.findAllByName(courseName.getValue()).isEmpty()) {
+                    Course course = courseRepository.save(
+                            new Course(0L, courseName.getValue(), null));
+                    courseList.add(course);
+                    courseName.setValue("");
 
-        ComboBox<Zajecia> powiadomienieZajec = new ComboBox<>("Zajęcia");
-        powiadomienieZajec.setItems(listaZajecia);
-        powiadomienieZajec.setItemCaptionGenerator(Zajecia::getTemat);
+                    Notification.show("Utworzono kurs", "",
+                            Notification.Type.HUMANIZED_MESSAGE);
+                } else {
+                    Notification.show("Kurs o podanej nazwie istnieje!", "",
+                            Notification.Type.ERROR_MESSAGE);
+                }
+            }
+        });
+        coursesLayout.addComponents(courseName, addButton);
 
-        Grid<Powiadomienie> tabelaPowiadomien = new Grid<>();
-        tabelaPowiadomien.addColumn(Powiadomienie::getId).setCaption("Id");
-        tabelaPowiadomien.addColumn(Powiadomienie::getTemat).setCaption("Temat");
-        tabelaPowiadomien.addColumn(Powiadomienie::getTresc).setCaption("Tresc");
-        tabelaPowiadomien.addColumn(p -> p.getUzytkownik().getLogin()).setCaption("Uzytkownik");
+        Label emptyLabel = new Label();
+        ComboBox<Course> courseComboBox = new ComboBox<>("Wybierz kurs do usunięcia");
+        courseComboBox.setEmptySelectionAllowed(false);
+        courseComboBox.setDataProvider(DataProvider.ofCollection(courseList));
+        courseComboBox.setItemCaptionGenerator(Course::getName);
+        courseComboBox.setWidth("250");
+        courseComboBox.addValueChangeListener(event ->
+                courseComboBox.setDataProvider(DataProvider.ofCollection(courseList)));
 
-        powiadomienieZajec.addValueChangeListener(event -> {
-            List<Powiadomienie> listaPowiadomien = powiadomienieRepozytorium.findAllByZajecia(event.getValue());
-            tabelaPowiadomien.setItems(listaPowiadomien);
+        Button deleteButton = new Button("Usuń");
+        deleteButton.addClickListener(event1 -> {
+            if (courseComboBox.getValue() != null) {
+                requestRepository.deleteAllByCourse(courseComboBox.getValue());
+                courseRepository.delete(courseComboBox.getValue());
+
+                courseList.remove(courseComboBox.getValue());
+                courseComboBox.setDataProvider(DataProvider.ofCollection(courseList));
+                courseComboBox.setValue(null);
+
+                Notification.show("Kurs został usunięty!", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+            } else {
+                Notification.show("Nie wybrano kursu!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
+        coursesLayout.addComponents(emptyLabel, courseComboBox, deleteButton);
+
+        Label empty = new Label();
+        TextField courseNameToUpdate = new TextField("Nazwa");
+        courseNameToUpdate.setWidth("250");
+
+        ComboBox<Course> courseToUpdate = new ComboBox<>("Wybierz kurs do aktualizacji");
+        courseToUpdate.setEmptySelectionAllowed(false);
+        courseToUpdate.setDataProvider(DataProvider.ofCollection(courseList));
+        courseToUpdate.setItemCaptionGenerator(z -> z.getId().toString());
+        courseToUpdate.setWidth("100");
+        courseToUpdate.addValueChangeListener(event -> {
+            if (courseToUpdate.getValue() != null) {
+                courseToUpdate.setDataProvider(DataProvider.ofCollection(courseList));
+                courseNameToUpdate.setValue(courseToUpdate.getValue().getName());
+            }
         });
 
-        Button wyslijPowiadomienie = new Button("Wyślij powiadomienie");
-        wyslijPowiadomienie.addClickListener(event -> initWindow(powiadomienieZajec.getValue()));
+        Button updateButton = new Button("Aktualizuj");
+        updateButton.addClickListener(event1 -> {
+            if (courseToUpdate.getValue() != null && !courseNameToUpdate.getValue().equals("")) {
+                Course course = new Course(courseToUpdate.getValue().getId(), courseNameToUpdate.getValue(),
+                        courseToUpdate.getValue().getLessonSeriesList());
+                courseRepository.save(course);
 
-        layout.addComponents(powiadomienieZajec, tabelaPowiadomien, wyslijPowiadomienie);
+                courseList = courseRepository.findAll();
+                courseNameToUpdate.setValue("");
+                courseToUpdate.setValue(null);
+                courseToUpdate.setDataProvider(DataProvider.ofCollection(courseList));
+                courseComboBox.setDataProvider(DataProvider.ofCollection(courseList));
 
-        return layout;
+                Notification.show("Kurs został zaktualizowany!", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+            } else {
+                Notification.show("Nie wybrano danych!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
+        coursesLayout.addComponents(empty, courseToUpdate, courseNameToUpdate, updateButton);
     }
 
-    private void initWindow(Zajecia zajecia) {
+    private void initRequestsLayout() {
+        requestsLayout = new VerticalLayout();
+
+        ComboBox<User> userComboBox = new ComboBox<>("Wybierz uczestnika");
+        userComboBox.setEmptySelectionAllowed(false);
+        userComboBox.setDataProvider(DataProvider.ofCollection(studentList));
+        userComboBox.setItemCaptionGenerator(User::getLogin);
+
+        ComboBox<Request> requestComboBox = new ComboBox<>("Wybierz zgłoszenie");
+        requestComboBox.setEmptySelectionAllowed(false);
+        requestComboBox.setItemCaptionGenerator(z -> z.getCourse().getName() + ": " + z.getDate().toString());
+        requestComboBox.setWidth("300");
+        userComboBox.addValueChangeListener(event -> requestComboBox.setItems(
+                requestRepository.findAllByStudent(userComboBox.getValue())
+                        .stream()
+                        .filter(z -> z.getAccepted().equals(""))
+                        .collect(Collectors.toList())));
+
+        Button acceptButton = new Button("Potwierdź");
+        acceptButton.addClickListener(event1 -> {
+            if (requestComboBox.getValue() != null) {
+                Request request = requestComboBox.getValue();
+                request.setAccepted("tak");
+                requestRepository.save(request);
+
+                userComboBox.setValue(null);
+                requestComboBox.setValue(null);
+
+                Notification.show("Potwierdzono zgłoszenie!", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+            } else {
+                Notification.show("Nie wybrano zgłoszenia!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
+
+        Button rejectButton = new Button("Odrzuć");
+        rejectButton.addClickListener(event1 -> {
+            if (requestComboBox.getValue() != null) {
+                Request request = requestComboBox.getValue();
+                request.setAccepted("nie");
+                requestRepository.save(request);
+
+                userComboBox.setValue(null);
+                requestComboBox.setValue(null);
+
+                Notification.show("Odrzucono zgłoszenie!", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+            } else {
+                Notification.show("Nie wybrano zgłoszenia!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.addComponents(acceptButton, rejectButton);
+        requestsLayout.addComponents(userComboBox, requestComboBox, horizontalLayout);
+    }
+
+    private void initLessonSeriesLayout() {
+        lessonSeriesLayout = new VerticalLayout();
+
+        List<Course> courseList = courseRepository.findAll();
+        ComboBox<Course> courseComboBox = new ComboBox<>("Wybierz kurs");
+        courseComboBox.setEmptySelectionAllowed(false);
+        courseComboBox.setDataProvider(DataProvider.ofCollection(courseList));
+        courseComboBox.setItemCaptionGenerator(Course::getName);
+        courseComboBox.setWidth("250");
+
+        Grid<LessonSeries> lessonSeriesGrid = new Grid<>();
+        lessonSeriesGrid.addColumn(LessonSeries::getId).setCaption("ID").setWidth(100);
+        lessonSeriesGrid.addColumn(LessonSeries::getName).setCaption("Nazwa").setWidth(550);
+        lessonSeriesGrid.setWidth("650");
+        lessonSeriesGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        List<LessonSeries> lessonSeriesList = new ArrayList<>();
+        ListDataProvider<LessonSeries> provider = DataProvider.ofCollection(lessonSeriesList);
+        lessonSeriesGrid.setDataProvider(provider);
+
+        courseComboBox.addValueChangeListener(event -> {
+            List<Course> list = courseRepository.findAll();
+            courseComboBox.setDataProvider(DataProvider.ofCollection(list));
+            lessonSeriesList.clear();
+            if (event.getValue().getLessonSeriesList() != null) {
+                lessonSeriesList.addAll(event.getValue().getLessonSeriesList());
+            }
+            provider.refreshAll();
+        });
+
+        Button deleteButton = new Button("Usuń");
+        deleteButton.addClickListener(event -> {
+            if (!lessonSeriesGrid.getSelectedItems().isEmpty()) {
+                LessonSeries lessonSeries = lessonSeriesGrid.getSelectedItems().iterator().next();
+                lessonSeriesList.remove(lessonSeries);
+                provider.refreshAll();
+
+                Course course = courseComboBox.getValue();
+                List<LessonSeries> currentList = course.getLessonSeriesList();
+                currentList.remove(lessonSeries);
+                course.setLessonSeriesList(currentList);
+                courseRepository.save(course);
+
+                Notification.show("Usunięto blok", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+            }
+        });
+
+        Label label = new Label();
+        TextField lessonSeriesName = new TextField("Nazwa bloku");
+
+        Button addButton = new Button("Dodaj blok");
+        addButton.addClickListener(event -> {
+            if (!lessonSeriesName.getValue().equals("")) {
+                if (lessonSeriesRepository.findAllByName(lessonSeriesName.getValue()).isEmpty()) {
+                    LessonSeries lessonSeries = lessonSeriesRepository.save(
+                            new LessonSeries(0L, lessonSeriesName.getValue(), null));
+                    Course course = courseComboBox.getValue();
+                    List<LessonSeries> currentList = course.getLessonSeriesList() != null ?
+                            course.getLessonSeriesList() : new ArrayList<>();
+                    currentList.add(lessonSeries);
+                    course.setLessonSeriesList(currentList);
+                    courseRepository.save(course);
+
+                    lessonSeriesList.add(lessonSeries);
+                    provider.refreshAll();
+                    lessonSeriesName.setValue("");
+
+                    Notification.show("Utworzono blok", "",
+                            Notification.Type.HUMANIZED_MESSAGE);
+                } else {
+                    Notification.show("Blok o podanej nazwie istnieje!", "",
+                            Notification.Type.ERROR_MESSAGE);
+                }
+            } else {
+                Notification.show("Nie podano nazwy bloku!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
+        lessonSeriesLayout.addComponents(courseComboBox, lessonSeriesGrid,
+                deleteButton, label, lessonSeriesName, addButton);
+
+        Label empty = new Label();
+        TextField lessonSeriesNameToUpdate = new TextField("Nazwa");
+        lessonSeriesNameToUpdate.setWidth("250");
+
+        ComboBox<LessonSeries> lessonSeriesComboBox = new ComboBox<>("Wybierz blok do aktualizacji");
+        lessonSeriesComboBox.setEmptySelectionAllowed(false);
+        lessonSeriesComboBox.setDataProvider(provider);
+        lessonSeriesComboBox.setItemCaptionGenerator(b -> b.getId().toString());
+        lessonSeriesComboBox.setWidth("100");
+        lessonSeriesComboBox.addValueChangeListener(event -> {
+            if (lessonSeriesComboBox.getValue() != null) {
+                lessonSeriesNameToUpdate.setValue(lessonSeriesComboBox.getValue().getName());
+            }
+        });
+
+        Button updateButton = new Button("Aktualizuj");
+        updateButton.addClickListener(event1 -> {
+            if (lessonSeriesComboBox.getValue() != null && !lessonSeriesNameToUpdate.getValue().equals("")) {
+                LessonSeries lessonSeries = new LessonSeries(lessonSeriesComboBox.getValue().getId(),
+                        lessonSeriesNameToUpdate.getValue(), lessonSeriesComboBox.getValue().getLessons());
+                lessonSeriesRepository.save(lessonSeries);
+
+                lessonSeriesNameToUpdate.setValue("");
+                lessonSeriesComboBox.setValue(null);
+                lessonSeriesList.clear();
+                Set<LessonSeries> set = new HashSet<>(Objects.requireNonNull(
+                        courseRepository.findById(courseComboBox.getValue().getId())
+                                .map(Course::getLessonSeriesList)
+                                .orElse(null)));
+                lessonSeriesList.addAll(set);
+                provider.refreshAll();
+
+                Notification.show("Blok został zaktualizowany!", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+            } else {
+                Notification.show("Nie wybrano danych!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
+        lessonSeriesLayout.addComponents(empty, lessonSeriesComboBox, lessonSeriesNameToUpdate, updateButton);
+    }
+
+    private void initLessonsLayout() {
+        lessonsLayout = new VerticalLayout();
+
+        List<LessonSeries> lessonSeriesList = lessonSeriesRepository.findAll();
+        ComboBox<LessonSeries> lessonSeriesComboBox = new ComboBox<>("Wybierz blok");
+        lessonSeriesComboBox.setEmptySelectionAllowed(false);
+        lessonSeriesComboBox.setDataProvider(DataProvider.ofCollection(lessonSeriesList));
+        lessonSeriesComboBox.setItemCaptionGenerator(LessonSeries::getName);
+        lessonSeriesComboBox.setWidth("250");
+
+        Grid<Lesson> lessonGrid = new Grid<>();
+        lessonGrid.addColumn(Lesson::getId).setCaption("ID").setWidth(70);
+        lessonGrid.addColumn(Lesson::getSubject).setCaption("Temat").setWidth(300);
+        lessonGrid.addColumn(Lesson::getDate).setCaption("Data").setWidth(130);
+        lessonGrid.addColumn(z -> z.getTrainer() != null ? z.getTrainer().getLogin() : "")
+                .setCaption("Prowadzący").setWidth(150);
+        lessonGrid.setWidth("650");
+        lessonGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        List<Lesson> lessonList = new ArrayList<>();
+        ListDataProvider<Lesson> provider = DataProvider.ofCollection(lessonList);
+        lessonGrid.setDataProvider(provider);
+
+        lessonSeriesComboBox.addValueChangeListener(event1 -> {
+            List<LessonSeries> list = lessonSeriesRepository.findAll();
+            lessonSeriesComboBox.setDataProvider(DataProvider.ofCollection(list));
+            lessonList.clear();
+            if (event1.getValue().getLessons() != null) {
+                lessonList.addAll(event1.getValue().getLessons());
+            }
+            provider.refreshAll();
+        });
+
+        Button deleteButton = new Button("Usuń");
+        deleteButton.addClickListener(event -> {
+            if (!lessonGrid.getSelectedItems().isEmpty()) {
+                Lesson lesson = lessonGrid.getSelectedItems().iterator().next();
+                lessonList.remove(lesson);
+                provider.refreshAll();
+                LessonSeries lessonSeries = lessonSeriesComboBox.getValue();
+                List<Lesson> currentList = lessonSeries.getLessons();
+                currentList.remove(lesson);
+                lessonSeries.setLessons(currentList);
+                lessonSeriesRepository.save(lessonSeries);
+
+                Notification.show("Usunięto zajęcia", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+            }
+        });
+
+        Label label = new Label();
+        TextField lessonSubject = new TextField("Temat zajęć");
+        DateField dataField = new DateField("Data zajęć");
+
+        ComboBox<User> trainerComboBox = new ComboBox<>("Wybierz prowadzącego");
+        trainerComboBox.setEmptySelectionAllowed(false);
+        trainerComboBox.setDataProvider(DataProvider.ofCollection(trainerList));
+        trainerComboBox.setItemCaptionGenerator(User::getLogin);
+        trainerComboBox.addValueChangeListener(event -> trainerComboBox.setDataProvider(
+                DataProvider.ofCollection(trainerList = userRepository.findAll()
+                        .stream()
+                        .filter(u -> u.getUserType().equals(UserType.TRAINER))
+                        .collect(Collectors.toList()))
+        ));
+
+        Button addButton = new Button("Dodaj zajęcia");
+        addButton.addClickListener(event -> {
+            if (!lessonSubject.getValue().equals("") &&
+                    dataField.getValue() != null && trainerComboBox.getValue() != null) {
+                if (lessonRepository.findAllBySubject(lessonSubject.getValue()).isEmpty()) {
+                    Lesson lesson = lessonRepository.save(
+                            new Lesson(0L, lessonSubject.getValue(),
+                                    dataField.getValue(), trainerComboBox.getValue()));
+                    LessonSeries lessonSeries = lessonSeriesComboBox.getValue();
+                    List<Lesson> currentList = lessonSeries.getLessons() != null ?
+                            lessonSeries.getLessons() : new ArrayList<>();
+                    currentList.add(lesson);
+                    lessonSeries.setLessons(currentList);
+                    lessonSeriesRepository.save(lessonSeries);
+
+                    lessonList.add(lesson);
+                    provider.refreshAll();
+                    lessonSubject.setValue("");
+                    dataField.setValue(null);
+                    trainerComboBox.setValue(null);
+
+                    Notification.show("Utworzono zajęcia", "",
+                            Notification.Type.HUMANIZED_MESSAGE);
+                } else {
+                    Notification.show("Zajęcia o podanej nazwie istnieją!", "",
+                            Notification.Type.ERROR_MESSAGE);
+                }
+            } else {
+                Notification.show("Nie podano wszystkich danych!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
+        lessonsLayout.addComponents(lessonSeriesComboBox, lessonGrid, deleteButton,
+                label, lessonSubject, dataField, trainerComboBox, addButton);
+
+        Label empty = new Label();
+
+        TextField lessonSubjectToUpdate = new TextField("Temat zajęć");
+        lessonSubjectToUpdate.setWidth("300");
+        DateField lessonDateToUpdate = new DateField("Data zajęć");
+
+        ComboBox<User> trainerComboBoxToUpdate = new ComboBox<>("Wybierz prowadzącego");
+        trainerComboBoxToUpdate.setEmptySelectionAllowed(false);
+        trainerComboBoxToUpdate.setDataProvider(DataProvider.ofCollection(trainerList));
+        trainerComboBoxToUpdate.setItemCaptionGenerator(User::getLogin);
+        trainerComboBoxToUpdate.addValueChangeListener(event -> trainerComboBoxToUpdate.setDataProvider(
+                DataProvider.ofCollection(
+                        trainerList = userRepository.findAll()
+                                .stream()
+                                .filter(u -> u.getUserType().equals(UserType.TRAINER))
+                                .collect(Collectors.toList()))
+        ));
+
+        ComboBox<Lesson> lessonComboBox = new ComboBox<>("Wybierz zajęcia do aktualizacji");
+        lessonComboBox.setEmptySelectionAllowed(false);
+        lessonComboBox.setDataProvider(provider);
+        lessonComboBox.setItemCaptionGenerator(b -> b.getId().toString());
+        lessonComboBox.setWidth("100");
+        lessonComboBox.addValueChangeListener(event -> {
+            if (lessonComboBox.getValue() != null) {
+                lessonSubjectToUpdate.setValue(lessonComboBox.getValue().getSubject());
+                lessonDateToUpdate.setValue(lessonComboBox.getValue().getDate());
+                trainerComboBoxToUpdate.setValue(lessonComboBox.getValue().getTrainer());
+            }
+        });
+
+        Button updateButton = new Button("Zaktualizuj zajęcia");
+        updateButton.addClickListener(event -> {
+            if (!lessonSubjectToUpdate.getValue().equals("") &&
+                    lessonDateToUpdate.getValue() != null && trainerComboBoxToUpdate.getValue() != null) {
+                Lesson lesson = new Lesson(lessonComboBox.getValue().getId(), lessonSubjectToUpdate.getValue(),
+                        lessonDateToUpdate.getValue(), trainerComboBoxToUpdate.getValue());
+                lessonRepository.save(lesson);
+
+                lessonComboBox.setValue(null);
+                lessonSubjectToUpdate.setValue("");
+                lessonDateToUpdate.setValue(null);
+                trainerComboBoxToUpdate.setValue(null);
+                lessonList.clear();
+                lessonList.addAll(Objects.requireNonNull(
+                        lessonSeriesRepository.findById(lessonSeriesComboBox.getValue().getId())
+                                .map(LessonSeries::getLessons)
+                                .orElse(null)));
+                provider.refreshAll();
+
+                Notification.show("Zaktualizowano zajęcia", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+            } else {
+                Notification.show("Nie podano wszystkich danych!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
+        lessonsLayout.addComponents(empty, lessonComboBox, lessonSubjectToUpdate,
+                lessonDateToUpdate, trainerComboBoxToUpdate, updateButton);
+    }
+
+    private void initTrainersLayout() {
+        trainersLayout = new VerticalLayout();
+
+        TextField firstNameTextField = new TextField("Imię");
+        TextField lastNameTextField = new TextField("Nazwisko");
+        TextField loginTextField = new TextField("Login");
+        PasswordField passwordField = new PasswordField("Hasło");
+
+        Button addButton = new Button("Dodaj");
+        addButton.addClickListener(event -> {
+            String firstNameText = firstNameTextField.getValue();
+            String lastNameText = lastNameTextField.getValue();
+            String loginText = loginTextField.getValue();
+            String passwordText = passwordField.getValue();
+
+            if (firstNameText.length() > 2 && lastNameText.length() > 2 && loginText.length() > 2) {
+                if (passwordText.length() > 5 && passwordText.length() < 20) {
+                    if (checkPassword(passwordText)) {
+                        if (!userRepository.findAllLogin().contains(loginText)) {
+                            User user = new User(0L, loginText,
+                                    Hashing.sha512().hashString(passwordText, StandardCharsets.UTF_8).toString(),
+                                    UserType.TRAINER, firstNameText, lastNameText);
+                            userRepository.save(user);
+
+                            firstNameTextField.setValue("");
+                            lastNameTextField.setValue("");
+                            loginTextField.setValue("");
+                            passwordField.setValue("");
+
+                            Notification.show("Dodano prowadzącego!", "",
+                                    Notification.Type.HUMANIZED_MESSAGE);
+                        } else {
+                            Notification.show("Podany login już istnieje!", "",
+                                    Notification.Type.ERROR_MESSAGE);
+                        }
+                    } else {
+                        Notification.show("Hasło musi składać się z conajmniej: 1 małej litery, 1 dużej litery i 1 cyfry!",
+                                "", Notification.Type.ERROR_MESSAGE);
+                    }
+                } else {
+                    Notification.show("Hasło musi składać się z conajmniej 6 znaków!", "",
+                            Notification.Type.ERROR_MESSAGE);
+                }
+            } else {
+                Notification.show("Dane muszą składać się z conajmniej 3 znaków!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
+        trainersLayout.addComponents(firstNameTextField, lastNameTextField,
+                loginTextField, passwordField, addButton);
+
+        Label emptyLabel = new Label();
+
+        ComboBox<User> trainersComboBox = new ComboBox<>("Wybierz prowadzącego do usunięcia");
+        trainersComboBox.setEmptySelectionAllowed(false);
+        trainersComboBox.setDataProvider(DataProvider.ofCollection(trainerList));
+        trainersComboBox.setItemCaptionGenerator(User::getLogin);
+        trainersComboBox.addValueChangeListener(event -> {
+            trainerList = userRepository.findAll()
+                    .stream()
+                    .filter(u -> u.getUserType().equals(UserType.TRAINER))
+                    .collect(Collectors.toList());
+            trainersComboBox.setDataProvider(DataProvider.ofCollection(trainerList));
+        });
+
+        Button deleteButton = new Button("Usuń");
+        deleteButton.addClickListener(event1 -> {
+            if (trainersComboBox.getValue() != null) {
+                User user = trainersComboBox.getValue();
+                trainerList.remove(user);
+
+                List<Lesson> lesson = lessonRepository.findAllByTrainer(user);
+                lesson.forEach(z -> z.setTrainer(null));
+                lessonRepository.saveAll(lesson);
+                userRepository.delete(user);
+
+                trainersComboBox.setDataProvider(DataProvider.ofCollection(trainerList));
+                trainersComboBox.setValue(null);
+
+                Notification.show("Prowadzący został usunięty!", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+            } else {
+                Notification.show("Nie wybrano prowadzącego!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
+        trainersLayout.addComponents(emptyLabel, trainersComboBox, deleteButton);
+    }
+
+    private void initMessagesForTrainerLayout() {
+        messagesLayout = new VerticalLayout();
+
+        List<Lesson> lessonList = lessonRepository.findAllByTrainer(currentUser);
+        lessonList = lessonList.stream()
+                .filter(z -> messageRepository.findAllByLesson(z) != null)
+                .collect(Collectors.toList());
+
+        ComboBox<Lesson> messagesComboBox = new ComboBox<>("Zajęcia");
+        messagesComboBox.setItems(lessonList);
+        messagesComboBox.setItemCaptionGenerator(Lesson::getSubject);
+        messagesComboBox.setWidth("250");
+        messagesComboBox.setEmptySelectionAllowed(false);
+
+        Grid<Message> messagesGrid = new Grid<>();
+        messagesGrid.addColumn(Message::getId).setCaption("ID").setWidth(70);
+        messagesGrid.addColumn(Message::getSubject).setCaption("Temat").setWidth(200);
+        messagesGrid.addColumn(Message::getText).setCaption("Treść").setWidth(330);
+        messagesGrid.addColumn(p -> p.getStudent().getLogin()).setCaption("Uczestnik").setWidth(150);
+        messagesGrid.setWidth("750");
+        messagesComboBox.addValueChangeListener(event -> {
+            List<Message> messageList = messageRepository.findAllByLesson(event.getValue());
+            messagesGrid.setItems(messageList);
+        });
+
+        Button sendButton = new Button("Wyślij powiadomienie");
+        sendButton.addClickListener(event -> initWindowForMessages());
+
+        messagesLayout.addComponents(messagesComboBox, messagesGrid, sendButton);
+    }
+
+    private void initWindowForMessages() {
         Window windowAddNotification = new Window("Dodaj powiadomienie");
         windowAddNotification.setWidth(400.0f, Sizeable.Unit.PIXELS);
         windowAddNotification.setModal(true);
@@ -199,631 +718,169 @@ public class LoggedUI extends VerticalLayout{
         FormLayout formWindowNotification = new FormLayout();
         formWindowNotification.setMargin(true);
 
-        ComboBox<Zajecia> zajeciaCombobox = new ComboBox<>("Zajęcia");
-        zajeciaCombobox.setItems(zajeciaRepozytorium.findAllByProwadzacy(uzytkownik));
-        zajeciaCombobox.setItemCaptionGenerator(Zajecia::getTemat);
+        ComboBox<Lesson> lessonComboBox = new ComboBox<>("Zajęcia");
+        lessonComboBox.setItems(lessonRepository.findAllByTrainer(currentUser));
+        lessonComboBox.setItemCaptionGenerator(Lesson::getSubject);
+        lessonComboBox.setEmptySelectionAllowed(false);
 
-        TextField temat = new TextField("Temat");
-        TextArea tresc = new TextArea("Treść");
-        ComboBox<Uzytkownik> uzytkownikCombobox = new ComboBox<>("Użytkownik");
-        uzytkownikCombobox.setItemCaptionGenerator(Uzytkownik::getLogin);
+        TextField subject = new TextField("Temat");
+        TextArea text = new TextArea("Treść");
+        ComboBox<User> userComboBox = new ComboBox<>("Uczestnik");
+        userComboBox.setItemCaptionGenerator(User::getLogin);
+        userComboBox.setEmptySelectionAllowed(false);
 
-        zajeciaCombobox.addValueChangeListener(event -> {
-            Kurs kurs = kursRepozytorium.findAllByBlok(blokRepozytorium.findAllByZajecia(zajeciaCombobox.getValue()).get(0)).get(0);
-
-            List<Uzytkownik> listaUzytkownikow = zgloszenieRepozytorium.findAllByKurs(kurs)
+        lessonComboBox.addValueChangeListener(event -> {
+            Course course = courseRepository.findAllByLessonSeriesListContains(
+                    lessonSeriesRepository.findAllByLessonsContains(lessonComboBox.getValue()).get(0)).get(0);
+            List<User> userList = requestRepository.findAllByCourse(course)
                     .stream()
-                    .map(z -> z.getUczestnik())
+                    .map(Request::getStudent)
                     .collect(Collectors.toList());
-
-            uzytkownikCombobox.setItems(listaUzytkownikow);
+            userComboBox.setItems(userList);
         });
 
-        Button wyslij = new Button("Wyślij");
-        wyslij.addClickListener(event -> {
-            if(temat.getValue().equals(""))
-                Notification.show("Wpisz temat", Notification.Type.ERROR_MESSAGE);
-            else if(uzytkownikCombobox.getValue() == null)
-                Notification.show("Wprowadź użytkownika", Notification.Type.ERROR_MESSAGE);
-            else if(zajeciaCombobox.getValue() == null)
-                Notification.show("Wprowadź zajęcia", Notification.Type.ERROR_MESSAGE);
-            else {
-                Powiadomienie nowePowiadomienie = new Powiadomienie(0l, temat.getValue(), tresc.getValue(), uzytkownikCombobox.getValue(), zajeciaCombobox.getValue());
-                powiadomienieRepozytorium.save(nowePowiadomienie);
-                Notification.show("Wysłano powiadomienie", "", Notification.Type.HUMANIZED_MESSAGE);
-                temat.clear();
-                tresc.clear();
+        Button sendButton = new Button("Wyślij");
+        sendButton.addClickListener(event -> {
+            if (subject.getValue().equals("")) {
+                Notification.show("Wpisz temat!", Notification.Type.ERROR_MESSAGE);
+
+            } else if (userComboBox.getValue() == null) {
+                Notification.show("Wprowadź uczestnika!", Notification.Type.ERROR_MESSAGE);
+
+            } else if (lessonComboBox.getValue() == null) {
+                Notification.show("Wprowadź zajęcia!", Notification.Type.ERROR_MESSAGE);
+
+            } else {
+                Message message = new Message(0L, subject.getValue(), text.getValue(),
+                        userComboBox.getValue(), lessonComboBox.getValue());
+                messageRepository.save(message);
+                Notification.show("Wysłano powiadomienie", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+                subject.clear();
+                text.clear();
             }
         });
-
-        formWindowNotification.addComponents(zajeciaCombobox, temat, tresc, uzytkownikCombobox, wyslij);
+        formWindowNotification.addComponents(lessonComboBox, subject, text, userComboBox, sendButton);
 
         windowAddNotification.setContent(formWindowNotification);
         getUI().addWindow(windowAddNotification);
     }
 
-    private VerticalLayout initTabelaZajec() {
-        List<Zajecia> listaZajecia = zajeciaRepozytorium.findAllByProwadzacy(uzytkownik);
+    private void initLessonsForTrainerLayout() {
+        lessonsLayout = new VerticalLayout();
 
-        VerticalLayout layout = new VerticalLayout();
+        List<Lesson> lessonList = lessonRepository.findAllByTrainer(currentUser);
+        Grid<Lesson> lessonGrid = new Grid<>();
+        lessonGrid.setItems(lessonList);
+        lessonGrid.addColumn(Lesson::getId).setCaption("ID");
+        lessonGrid.addColumn(Lesson::getSubject).setCaption("Temat");
+        lessonGrid.addColumn(Lesson::getDate).setCaption("Data");
 
-        Grid<Zajecia> tabelaZajec = new Grid<>();
-        tabelaZajec.setItems(listaZajecia);
-        tabelaZajec.addColumn(Zajecia::getId).setCaption("Id");
-        tabelaZajec.addColumn(Zajecia::getTemat).setCaption("Temat");
-        tabelaZajec.addColumn(Zajecia::getData).setCaption("Data");
-
-        layout.addComponent(tabelaZajec);
-        return layout;
+        lessonsLayout.addComponent(lessonGrid);
     }
 
-    private void initKursyLayout() {
-        utworzKursLayout = new VerticalLayout();
-        TextField nameProject = new TextField("Nazwa");
-        Button createButton = new Button("Utwórz");
+    private void initMessagesForStudentLayout() {
+        messagesLayout = new VerticalLayout();
 
-        createButton.addClickListener(event1 -> {
-            if (!nameProject.getValue().equals("")) {
-                if (kursRepozytorium.findAllByNazwa(nameProject.getValue()).isEmpty()) {
-                    Kurs kurs = kursRepozytorium.save(
-                            new Kurs(0L, nameProject.getValue(), null));
+        List<Message> messages = messageRepository.findAllByStudent(currentUser);
+        Grid<Message> messageGrid = new Grid<>();
+        messageGrid.addColumn(Message::getId).setCaption("ID").setWidth(70);
+        messageGrid.addColumn(Message::getSubject).setCaption("Temat").setWidth(200);
+        messageGrid.addColumn(Message::getText).setCaption("Treść").setWidth(330);
+        messageGrid.addColumn(z -> z.getLesson().getSubject()).setCaption("Zajęcia").setWidth(300);
+        messageGrid.setWidth("900");
+        messageGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        messageGrid.setDataProvider(DataProvider.ofCollection(messages));
 
-                    listaKursow.add(kurs);
-                    nameProject.setValue("");
-                    Notification.show("Utworzono kurs", "", Notification.Type.HUMANIZED_MESSAGE);
-
-                } else
-                    Notification.show("Kurs o podanej nazwie istnieje!", "", Notification.Type.ERROR_MESSAGE);
-            }
-        });
-
-        utworzKursLayout.addComponents(nameProject, createButton);
-
-        Label emptyLabel = new Label();
-        ComboBox<Kurs> kursComboBox = new ComboBox<>("Wybierz kurs do usunięcia");
-        kursComboBox.setEmptySelectionAllowed(false);
-        kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
-        kursComboBox.setItemCaptionGenerator(Kurs::getNazwa);
-        kursComboBox.setWidth("250");
-
-        kursComboBox.addValueChangeListener(event ->
-                kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow)));
-
-        Button deleteKursButton = new Button("Usuń");
-        deleteKursButton.addClickListener(event1 -> {
-            if (kursComboBox.getValue() != null) {
-                zgloszenieRepozytorium.deleteAllByKurs(kursComboBox.getValue());
-                kursRepozytorium.delete(kursComboBox.getValue());
-                listaKursow.remove(kursComboBox.getValue());
-
-                kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
-                kursComboBox.setValue(null);
-
-                Notification.show("Kurs został usunięty!", "", Notification.Type.HUMANIZED_MESSAGE);
-
-            } else
-                Notification.show("Nie wybrano kursu!", "", Notification.Type.ERROR_MESSAGE);
-        });
-
-        utworzKursLayout.addComponents(emptyLabel, kursComboBox, deleteKursButton);
-
-        Label empty = new Label();
-        TextField nameKurs = new TextField("Nazwa");
-        nameKurs.setWidth("250");
-
-        ComboBox<Kurs> kursUpdate = new ComboBox<>("Wybierz kurs do aktualizacji");
-        kursUpdate.setEmptySelectionAllowed(false);
-        kursUpdate.setDataProvider(DataProvider.ofCollection(listaKursow));
-        kursUpdate.setItemCaptionGenerator(z -> z.getId().toString());
-        kursUpdate.setWidth("100");
-
-        kursUpdate.addValueChangeListener(event -> {
-            if(kursUpdate.getValue() != null) {
-                kursUpdate.setDataProvider(DataProvider.ofCollection(listaKursow));
-                nameKurs.setValue(kursUpdate.getValue().getNazwa());
-            }
-        });
-
-        Button updateKursButton = new Button("Aktualizuj");
-        updateKursButton.addClickListener(event1 -> {
-            if (kursUpdate.getValue() != null && !nameKurs.getValue().equals("")) {
-                Kurs kurs = new Kurs(kursUpdate.getValue().getId(), nameKurs.getValue(), kursUpdate.getValue().getBlok());
-
-                kursRepozytorium.save(kurs);
-                listaKursow = kursRepozytorium.findAll();
-
-                nameKurs.setValue("");
-                kursUpdate.setValue(null);
-
-                kursUpdate.setDataProvider(DataProvider.ofCollection(listaKursow));
-                kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
-
-                Notification.show("Kurs został zaktualizowany!", "", Notification.Type.HUMANIZED_MESSAGE);
-
-            } else
-                Notification.show("Nie wybrano danych!", "", Notification.Type.ERROR_MESSAGE);
-        });
-
-        utworzKursLayout.addComponents(empty, kursUpdate, nameKurs, updateKursButton);
+        messagesLayout.addComponents(messageGrid);
     }
 
-    private void initZgodaLayout() {
-        zgodyLayout = new VerticalLayout();
+    private void initLessonSeriesForStudentLayout() {
+        lessonSeriesLayout = new VerticalLayout();
 
-        ComboBox<Uzytkownik> uzytkownikComboBox = new ComboBox<>("Wybierz uczestnika");
-        uzytkownikComboBox.setEmptySelectionAllowed(false);
-        uzytkownikComboBox.setDataProvider(DataProvider.ofCollection(listaUzytkownikow));
-        uzytkownikComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
+        Set<LessonSeries> lessonSeriesSet = new HashSet<>();
+        requestRepository.findAllByStudent(currentUser)
+                .stream()
+                .filter(z -> z.getAccepted().equals("tak"))
+                .map(z -> z.getCourse().getLessonSeriesList())
+                .flatMap(List::stream)
+                .forEach(lessonSeriesSet::add);
 
-        ComboBox<Zgloszenie> zgloszenieComboBox = new ComboBox<>("Wybierz zgłoszenie");
-        zgloszenieComboBox.setEmptySelectionAllowed(false);
-        zgloszenieComboBox.setItemCaptionGenerator(z -> z.getKurs().getNazwa() + ": " + z.getData().toString());
-        zgloszenieComboBox.setWidth("300");
-        uzytkownikComboBox.addValueChangeListener(event -> zgloszenieComboBox.setItems(
-                zgloszenieRepozytorium.findAllByUczestnik(uzytkownikComboBox.getValue())
-                        .stream()
-                        .filter(z -> z.getZgoda().equals(""))
-                        .collect(Collectors.toList())));
+        ComboBox<LessonSeries> lessonSeriesComboBox = new ComboBox<>("Wybierz blok");
+        lessonSeriesComboBox.setEmptySelectionAllowed(false);
+        lessonSeriesComboBox.setDataProvider(DataProvider.ofCollection(lessonSeriesSet));
+        lessonSeriesComboBox.setItemCaptionGenerator(LessonSeries::getName);
+        lessonSeriesComboBox.setWidth("250");
 
-        Button potwierdz = new Button("Potwierdź");
-        potwierdz.addClickListener(event1 -> {
-            if (zgloszenieComboBox.getValue() != null) {
-                Zgloszenie zgloszenie = zgloszenieComboBox.getValue();
-                zgloszenie.setZgoda("tak");
-                zgloszenieRepozytorium.save(zgloszenie);
+        Grid<Lesson> lessonGrid = new Grid<>();
+        lessonGrid.addColumn(Lesson::getId).setCaption("ID").setWidth(70);
+        lessonGrid.addColumn(Lesson::getSubject).setCaption("Temat").setWidth(300);
+        lessonGrid.addColumn(Lesson::getDate).setCaption("Data").setWidth(130);
+        lessonGrid.addColumn(z -> z.getTrainer() != null ? z.getTrainer().getLogin() : "")
+                .setCaption("Prowadzący").setWidth(150);
+        lessonGrid.setWidth("650");
+        lessonGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        List<Lesson> lessonList = new ArrayList<>();
+        ListDataProvider<Lesson> provider = DataProvider.ofCollection(lessonList);
+        lessonGrid.setDataProvider(provider);
 
-                uzytkownikComboBox.setValue(null);
-                zgloszenieComboBox.setValue(null);
-
-                Notification.show("Potwierdzono zgłoszenie!", "", Notification.Type.HUMANIZED_MESSAGE);
-            } else
-                Notification.show("Nie wybrano zgłoszenia!", "", Notification.Type.ERROR_MESSAGE);
+        lessonSeriesComboBox.addValueChangeListener(event -> {
+            lessonList.clear();
+            lessonList.addAll(event.getValue().getLessons());
+            provider.refreshAll();
         });
+        lessonSeriesLayout.addComponents(lessonSeriesComboBox, lessonGrid);
+    }
 
-        Button odrzuc = new Button("Odrzuć");
-        odrzuc.addClickListener(event1 -> {
-            if (zgloszenieComboBox.getValue() != null) {
-                Zgloszenie zgloszenie = zgloszenieComboBox.getValue();
-                zgloszenie.setZgoda("nie");
-                zgloszenieRepozytorium.save(zgloszenie);
+    private void initRequestsForStudentLayout() {
+        requestsLayout = new VerticalLayout();
 
-                uzytkownikComboBox.setValue(null);
-                zgloszenieComboBox.setValue(null);
+        List<Course> courseList = getCoursesToRequest();
+        ComboBox<Course> courseComboBox = new ComboBox<>("Wybierz kurs do zgłoszenia");
+        courseComboBox.setEmptySelectionAllowed(false);
+        courseComboBox.setItemCaptionGenerator(Course::getName);
+        courseComboBox.setDataProvider(DataProvider.ofCollection(courseList));
+        courseComboBox.setWidth("300");
 
-                Notification.show("Odrzucono zgłoszenie!", "", Notification.Type.HUMANIZED_MESSAGE);
-            } else
-                Notification.show("Nie wybrano zgłoszenia!", "", Notification.Type.ERROR_MESSAGE);
+        Button addButton = new Button("Wyślij zgłoszenie");
+        addButton.addClickListener(event1 -> {
+            if (courseComboBox.getValue() != null) {
+                Course course = courseComboBox.getValue();
+                Request request = new Request();
+                request.setDate(LocalDate.now());
+                request.setAccepted("");
+                request.setStudent(currentUser);
+                request.setCourse(course);
+                requestRepository.save(request);
+
+                List<Course> refreshedCourseList = getCoursesToRequest();
+                courseComboBox.setDataProvider(DataProvider.ofCollection(refreshedCourseList));
+                courseComboBox.setValue(null);
+
+                Notification.show("Wysłano zgłoszenie na wybrany kurs!", "",
+                        Notification.Type.HUMANIZED_MESSAGE);
+            } else {
+                Notification.show("Nie wybrano kursu do zgłoszenia!", "",
+                        Notification.Type.ERROR_MESSAGE);
+            }
         });
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.addComponents(potwierdz, odrzuc);
-        zgodyLayout.addComponents(uzytkownikComboBox, zgloszenieComboBox, horizontalLayout);
+        horizontalLayout.addComponents(addButton);
+        requestsLayout.addComponents(courseComboBox, horizontalLayout);
     }
 
-    private void initBlokiLayout() {
-        zarzadzanieBlokamiLayout = new VerticalLayout();
-
-        List<Kurs> listaKursow = kursRepozytorium.findAll();
-
-        ComboBox<Kurs> kursComboBox = new ComboBox<>("Wybierz kurs");
-        kursComboBox.setEmptySelectionAllowed(false);
-        kursComboBox.setDataProvider(DataProvider.ofCollection(listaKursow));
-        kursComboBox.setItemCaptionGenerator(Kurs::getNazwa);
-        kursComboBox.setWidth("250");
-
-        Grid<Blok> blokGrid = new Grid<>();
-        blokGrid.addColumn(Blok::getId).setCaption("ID").setWidth(100);
-        blokGrid.addColumn(Blok::getNazwa).setCaption("Nazwa").setWidth(550);
-        blokGrid.setWidth("650");
-        blokGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        List<Blok> listaBlokow = new ArrayList<>();
-        ListDataProvider<Blok> provider = DataProvider.ofCollection(listaBlokow);
-        blokGrid.setDataProvider(provider);
-
-        kursComboBox.addValueChangeListener(event -> {
-            List<Kurs> lista = kursRepozytorium.findAll();
-            kursComboBox.setDataProvider(DataProvider.ofCollection(lista));
-
-            listaBlokow.clear();
-            if(event.getValue().getBlok() != null) {
-                listaBlokow.addAll(event.getValue().getBlok());
-            }
-            provider.refreshAll();
-        });
-
-        Button deleteButton = new Button("Usuń");
-        deleteButton.addClickListener(event -> {
-            if (!blokGrid.getSelectedItems().isEmpty()) {
-                Blok blok = blokGrid.getSelectedItems().iterator().next();
-                listaBlokow.remove(blok);
-                provider.refreshAll();
-
-                Kurs kurs = kursComboBox.getValue();
-                List<Blok> currentList = kurs.getBlok();
-                currentList.remove(blok);
-                kurs.setBlok(currentList);
-                kursRepozytorium.save(kurs);
-
-                Notification.show("Usunięto blok", "", Notification.Type.HUMANIZED_MESSAGE);
-            }
-        });
-
-        Label label = new Label();
-        TextField nazwaBloku = new TextField("Nazwa bloku");
-
-        Button addButton = new Button("Dodaj blok");
-        addButton.addClickListener(event -> {
-            if (!nazwaBloku.getValue().equals("")) {
-                if (blokRepozytorium.findAllByNazwa(nazwaBloku.getValue()).isEmpty()) {
-
-                    Blok blok = blokRepozytorium.save(
-                            new Blok(0L, nazwaBloku.getValue(), null));
-
-                    Kurs kurs = kursComboBox.getValue();
-                    List<Blok> currentList = kurs.getBlok() != null ? kurs.getBlok() : new ArrayList<>();
-                    currentList.add(blok);
-                    kurs.setBlok(currentList);
-                    kursRepozytorium.save(kurs);
-
-                    listaBlokow.add(blok);
-                    provider.refreshAll();
-
-                    nazwaBloku.setValue("");
-                    Notification.show("Utworzono blok", "", Notification.Type.HUMANIZED_MESSAGE);
-
-                } else
-                    Notification.show("Blok o podanej nazwie istnieje!", "", Notification.Type.ERROR_MESSAGE);
-            } else
-                Notification.show("Nie podano nazwy bloku!", "", Notification.Type.ERROR_MESSAGE);
-        });
-
-        zarzadzanieBlokamiLayout.addComponents(kursComboBox, blokGrid, deleteButton, label, nazwaBloku, addButton);
-
-        Label empty = new Label();
-        TextField nameBlok = new TextField("Nazwa");
-        nameBlok.setWidth("250");
-
-        ComboBox<Blok> blokUpdate = new ComboBox<>("Wybierz blok do aktualizacji");
-        blokUpdate.setEmptySelectionAllowed(false);
-        blokUpdate.setDataProvider(provider);
-        blokUpdate.setItemCaptionGenerator(b -> b.getId().toString());
-        blokUpdate.setWidth("100");
-
-        blokUpdate.addValueChangeListener(event -> {
-            if(blokUpdate.getValue() != null) {
-                nameBlok.setValue(blokUpdate.getValue().getNazwa());
-            }
-        });
-
-        Button updateBlokButton = new Button("Aktualizuj");
-        updateBlokButton.addClickListener(event1 -> {
-            if (blokUpdate.getValue() != null && !nameBlok.getValue().equals("")) {
-                Blok blok = new Blok(blokUpdate.getValue().getId(), nameBlok.getValue(), blokUpdate.getValue().getZajecia());
-
-                blokRepozytorium.save(blok);
-
-                nameBlok.setValue("");
-                blokUpdate.setValue(null);
-
-                listaBlokow.clear();
-                Set<Blok> zbior = new HashSet<>(kursRepozytorium.findById(kursComboBox.getValue().getId()).get().getBlok());
-                listaBlokow.addAll(zbior);
-                provider.refreshAll();
-
-                Notification.show("Blok został zaktualizowany!", "", Notification.Type.HUMANIZED_MESSAGE);
-
-            } else
-                Notification.show("Nie wybrano danych!", "", Notification.Type.ERROR_MESSAGE);
-        });
-
-        zarzadzanieBlokamiLayout.addComponents(empty, blokUpdate, nameBlok, updateBlokButton);
-    }
-
-    private void initZajeciaLayout() {
-        zarzadzanieZajeciamiLayout = new VerticalLayout();
-
-        List<Blok> listaBlokow = blokRepozytorium.findAll();
-
-        ComboBox<Blok> blokComboBox = new ComboBox<>("Wybierz blok");
-        blokComboBox.setEmptySelectionAllowed(false);
-        blokComboBox.setDataProvider(DataProvider.ofCollection(listaBlokow));
-        blokComboBox.setItemCaptionGenerator(Blok::getNazwa);
-        blokComboBox.setWidth("250");
-
-        Grid<Zajecia> zajeciaGrid = new Grid<>();
-        zajeciaGrid.addColumn(Zajecia::getId).setCaption("ID").setWidth(70);
-        zajeciaGrid.addColumn(Zajecia::getTemat).setCaption("Temat").setWidth(300);
-        zajeciaGrid.addColumn(Zajecia::getData).setCaption("Data").setWidth(130);
-        zajeciaGrid.addColumn(z -> z.getProwadzacy() != null ? z.getProwadzacy().getLogin() : "").setCaption("Prowadzący").setWidth(150);
-        zajeciaGrid.setWidth("650");
-        zajeciaGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        List<Zajecia> listaZajec = new ArrayList<>();
-        ListDataProvider<Zajecia> provider = DataProvider.ofCollection(listaZajec);
-        zajeciaGrid.setDataProvider(provider);
-
-        blokComboBox.addValueChangeListener(event1 -> {
-            List<Blok> lista = blokRepozytorium.findAll();
-            blokComboBox.setDataProvider(DataProvider.ofCollection(lista));
-
-            listaZajec.clear();
-            if(event1.getValue().getZajecia() != null) {
-                listaZajec.addAll(event1.getValue().getZajecia());
-            }
-            provider.refreshAll();
-        });
-
-        Button deleteButton = new Button("Usuń");
-        deleteButton.addClickListener(event -> {
-            if (!zajeciaGrid.getSelectedItems().isEmpty()) {
-                Zajecia zajecia = zajeciaGrid.getSelectedItems().iterator().next();
-                listaZajec.remove(zajecia);
-                provider.refreshAll();
-
-                Blok blok = blokComboBox.getValue();
-                List<Zajecia> currentList = blok.getZajecia();
-                currentList.remove(zajecia);
-                blok.setZajecia(currentList);
-                blokRepozytorium.save(blok);
-
-                Notification.show("Usunięto zajęcia", "", Notification.Type.HUMANIZED_MESSAGE);
-            }
-        });
-
-        Label label = new Label();
-        TextField nazwaZajec = new TextField("Temat zajęć");
-        DateField dataField = new DateField("Data zajęć");
-
-        ComboBox<Uzytkownik> prowadzacyComboBox = new ComboBox<>("Wybierz prowadzącego");
-        prowadzacyComboBox.setEmptySelectionAllowed(false);
-        prowadzacyComboBox.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
-        prowadzacyComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
-        prowadzacyComboBox.addValueChangeListener(event -> {
-            prowadzacyComboBox.setDataProvider(
-                    DataProvider.ofCollection(
-                            listaProwadzacych = uzytkownikRepozytorium.findAll()
-                                    .stream()
-                                    .filter(u -> u.getTyp() == Typ.PROWADZACY)
-                                    .collect(Collectors.toList())));
-        });
-
-        Button addButton = new Button("Dodaj zajęcia");
-        addButton.addClickListener(event -> {
-            if (!nazwaZajec.getValue().equals("") && dataField.getValue() != null && prowadzacyComboBox.getValue() != null) {
-                if (zajeciaRepozytorium.findAllByTemat(nazwaZajec.getValue()).isEmpty()) {
-
-                    Zajecia zajecia = zajeciaRepozytorium.save(
-                            new Zajecia(0L, nazwaZajec.getValue(), dataField.getValue(), prowadzacyComboBox.getValue()));
-
-                    Blok blok = blokComboBox.getValue();
-                    List<Zajecia> currentList = blok.getZajecia() != null ? blok.getZajecia() : new ArrayList<>();
-                    currentList.add(zajecia);
-                    blok.setZajecia(currentList);
-                    blokRepozytorium.save(blok);
-
-                    listaZajec.add(zajecia);
-                    provider.refreshAll();
-
-                    nazwaZajec.setValue("");
-                    dataField.setValue(null);
-                    prowadzacyComboBox.setValue(null);
-
-                    Notification.show("Utworzono zajęcia", "", Notification.Type.HUMANIZED_MESSAGE);
-
-                } else
-                    Notification.show("Zajęcia o podanej nazwie istnieją!", "", Notification.Type.ERROR_MESSAGE);
-            } else
-                Notification.show("Nie podano wszystkich danych!", "", Notification.Type.ERROR_MESSAGE);
-        });
-
-        zarzadzanieZajeciamiLayout.addComponents(blokComboBox, zajeciaGrid, deleteButton, label, nazwaZajec, dataField, prowadzacyComboBox, addButton);
-
-        Label empty = new Label();
-
-        TextField nameZajecia = new TextField("Temat zajęć");
-        nameZajecia.setWidth("300");
-        DateField dataZajecia = new DateField("Data zajęć");
-
-        ComboBox<Uzytkownik> prowadzacyZajecia = new ComboBox<>("Wybierz prowadzącego");
-        prowadzacyZajecia.setEmptySelectionAllowed(false);
-        prowadzacyZajecia.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
-        prowadzacyZajecia.setItemCaptionGenerator(Uzytkownik::getLogin);
-        prowadzacyZajecia.addValueChangeListener(event -> {
-            prowadzacyZajecia.setDataProvider(
-                    DataProvider.ofCollection(
-                            listaProwadzacych = uzytkownikRepozytorium.findAll()
-                                    .stream()
-                                    .filter(u -> u.getTyp() == Typ.PROWADZACY)
-                                    .collect(Collectors.toList())));
-        });
-
-        ComboBox<Zajecia> zajeciaUpdate = new ComboBox<>("Wybierz zajęcia do aktualizacji");
-        zajeciaUpdate.setEmptySelectionAllowed(false);
-        zajeciaUpdate.setDataProvider(provider);
-        zajeciaUpdate.setItemCaptionGenerator(b -> b.getId().toString());
-        zajeciaUpdate.setWidth("100");
-
-        zajeciaUpdate.addValueChangeListener(event -> {
-            if(zajeciaUpdate.getValue() != null) {
-
-                nameZajecia.setValue(zajeciaUpdate.getValue().getTemat());
-                dataZajecia.setValue(zajeciaUpdate.getValue().getData());
-                prowadzacyZajecia.setValue(zajeciaUpdate.getValue().getProwadzacy());
-            }
-        });
-
-        Button updateZajecia = new Button("Zaktualizuj zajęcia");
-        updateZajecia.addClickListener(event -> {
-            if (!nameZajecia.getValue().equals("") && dataZajecia.getValue() != null && prowadzacyZajecia.getValue() != null) {
-
-                Zajecia zajecia = new Zajecia(zajeciaUpdate.getValue().getId(), nameZajecia.getValue(),
-                        dataZajecia.getValue(), prowadzacyZajecia.getValue());
-
-                zajeciaRepozytorium.save(zajecia);
-
-                zajeciaUpdate.setValue(null);
-                nameZajecia.setValue("");
-                dataZajecia.setValue(null);
-                prowadzacyZajecia.setValue(null);
-
-                listaZajec.clear();
-                listaZajec.addAll(blokRepozytorium.findById(blokComboBox.getValue().getId()).get().getZajecia());
-                provider.refreshAll();
-
-                Notification.show("Zaktualizowano zajęcia", "", Notification.Type.HUMANIZED_MESSAGE);
-
-            } else
-                Notification.show("Nie podano wszystkich danych!", "", Notification.Type.ERROR_MESSAGE);
-        });
-
-        zarzadzanieZajeciamiLayout.addComponents(empty, zajeciaUpdate, nameZajecia, dataZajecia, prowadzacyZajecia, updateZajecia);
-    }
-
-    private void initProwadzacyLayout(){
-        zarzadzanieProwadzacymiLayout = new VerticalLayout();
-
-        TextField imieTextField = new TextField("Imię");
-        TextField nazwiskoTextField = new TextField("Nazwisko");
-        TextField loginTextField = new TextField("Login");
-        PasswordField hasloField = new PasswordField("Hasło");
-
-        Button addUzytkownik = new Button("Dodaj");
-
-        addUzytkownik.addClickListener(event -> {
-            String imieText = imieTextField.getValue();
-            String nazwiskoText = nazwiskoTextField.getValue();
-            String loginText = loginTextField.getValue();
-            String hasloText = hasloField.getValue();
-
-            if (imieText.length() > 3 && nazwiskoText.length() > 3 && loginText.length() > 3) {
-                if (hasloText.length() > 5 && hasloText.length() < 20) {
-                    if (sprawdzHaslo(hasloText)) {
-                        if (!uzytkownikRepozytorium.findAllLogins().contains(loginText)) {
-
-                            Uzytkownik uzytkownik = new Uzytkownik(0L, loginText,
-                                    Hashing.sha512().hashString(hasloText, StandardCharsets.UTF_8).toString(),
-                                    Typ.PROWADZACY, imieText, nazwiskoText, 0);
-
-                            uzytkownikRepozytorium.save(uzytkownik);
-
-                            imieTextField.setValue("");
-                            nazwiskoTextField.setValue("");
-                            loginTextField.setValue("");
-                            hasloField.setValue("");
-
-                            Notification.show("Dodano prowadzącego!", "", Notification.Type.HUMANIZED_MESSAGE);
-                        } else
-                            Notification.show("Podany login już istnieje!", "", Notification.Type.ERROR_MESSAGE);
-                    } else
-                        Notification.show("Hasło musi składać się z conajmniej: 1 małej litery, 1 dużej litery i 1 cyfry!",
-                                "", Notification.Type.ERROR_MESSAGE);
-                } else
-                    Notification.show("Hasło musi składać się z conajmniej 6 znaków!", "", Notification.Type.ERROR_MESSAGE);
-
-            } else
-                Notification.show("Dane muszą składać się z conajmniej 4 znaków!", "", Notification.Type.ERROR_MESSAGE);
-        });
-
-        zarzadzanieProwadzacymiLayout.addComponents(imieTextField, nazwiskoTextField, loginTextField, hasloField, addUzytkownik);
-
-        Label emptyLabel = new Label();
-        ComboBox<Uzytkownik> uzytkownikComboBox = new ComboBox<>("Wybierz prowadzącego do usunięcia");
-        uzytkownikComboBox.setEmptySelectionAllowed(false);
-        uzytkownikComboBox.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
-        uzytkownikComboBox.setItemCaptionGenerator(Uzytkownik::getLogin);
-        uzytkownikComboBox.addValueChangeListener(event -> {
-
-                listaProwadzacych = uzytkownikRepozytorium.findAll()
-                        .stream()
-                        .filter(u -> u.getTyp() == Typ.PROWADZACY)
-                        .collect(Collectors.toList());
-
-                uzytkownikComboBox.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
-        });
-
-        Button deleteButton = new Button("Usuń");
-        deleteButton.addClickListener(event1 -> {
-            if (uzytkownikComboBox.getValue() != null) {
-                Uzytkownik uzytkownik = uzytkownikComboBox.getValue();
-                listaProwadzacych.remove(uzytkownik);
-
-                List<Zajecia> zajecia = zajeciaRepozytorium.findAllByProwadzacy(uzytkownik);
-                zajecia.forEach(z -> z.setProwadzacy(null));
-
-                zajeciaRepozytorium.saveAll(zajecia);
-                uzytkownikRepozytorium.delete(uzytkownik);
-
-                uzytkownikComboBox.setDataProvider(DataProvider.ofCollection(listaProwadzacych));
-                uzytkownikComboBox.setValue(null);
-
-                Notification.show("Prowadzący został usunięty!", "", Notification.Type.HUMANIZED_MESSAGE);
-
-            } else
-                Notification.show("Nie wybrano prowadzącego!", "", Notification.Type.ERROR_MESSAGE);
-        });
-
-        zarzadzanieProwadzacymiLayout.addComponents(emptyLabel, uzytkownikComboBox, deleteButton);
-    }
-
-    private boolean sprawdzHaslo(String haslo) {
-        final String patternString = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,20})";
-        Pattern pattern = Pattern.compile(patternString);
-        Matcher matcher = pattern.matcher(haslo);
-
-        return matcher.matches();
-    }
-
-    private void initPowiadomieniaLayout(){
-        powiadomieniaLayout = new VerticalLayout();
-
-        List<Powiadomienie> powiadomienia = powiadomienieRepozytorium.findAllByUzytkownik(uzytkownik);
-
-        Grid<Powiadomienie> powiadomienieGrid = new Grid<>();
-        powiadomienieGrid.addColumn(Powiadomienie::getId).setCaption("ID").setWidth(70);
-        powiadomienieGrid.addColumn(Powiadomienie::getTemat).setCaption("Temat").setWidth(200);
-        powiadomienieGrid.addColumn(Powiadomienie::getTresc).setCaption("Treść").setWidth(330);
-        powiadomienieGrid.addColumn(z -> z.getZajecia().getTemat()).setCaption("Zajęcia").setWidth(300);
-        powiadomienieGrid.setWidth("900");
-        powiadomienieGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        powiadomienieGrid.setDataProvider(DataProvider.ofCollection(powiadomienia));
-
-        powiadomieniaLayout.addComponents(powiadomienieGrid);
-    }
-
-    private void initUzytkownikBlokiLayout(){
-        uzytkownikBlokiLayout = new VerticalLayout();
-
-        Set<Blok> listaBlokow = new HashSet<>();
-
-        zgloszenieRepozytorium.findAllByUczestnik(uzytkownik)
+    private List<Course> getCoursesToRequest() {
+        Set<Long> requestedCourses = requestRepository.findAllByStudent(currentUser)
                 .stream()
-                .filter(z -> z.getZgoda().equals("tak"))
-                .map(z -> z.getKurs().getBlok())
-                .flatMap(List::stream)
-                .forEach(b -> listaBlokow.add(b));
+                .filter(z -> !z.getAccepted().equals("nie"))
+                .map(z -> z.getCourse().getId())
+                .collect(Collectors.toSet());
 
-        ComboBox<Blok> blokComboBox = new ComboBox<>("Wybierz blok");
-        blokComboBox.setEmptySelectionAllowed(false);
-        blokComboBox.setDataProvider(DataProvider.ofCollection(listaBlokow));
-        blokComboBox.setItemCaptionGenerator(Blok::getNazwa);
-        blokComboBox.setWidth("250");
-
-        Grid<Zajecia> zajeciaGrid = new Grid<>();
-        zajeciaGrid.addColumn(Zajecia::getId).setCaption("ID").setWidth(70);
-        zajeciaGrid.addColumn(Zajecia::getTemat).setCaption("Temat").setWidth(300);
-        zajeciaGrid.addColumn(Zajecia::getData).setCaption("Data").setWidth(130);
-        zajeciaGrid.addColumn(z -> z.getProwadzacy() != null ? z.getProwadzacy().getLogin() : "").setCaption("Prowadzący").setWidth(150);
-        zajeciaGrid.setWidth("650");
-        zajeciaGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        List<Zajecia> listaZajec = new ArrayList<>();
-        ListDataProvider<Zajecia> provider = DataProvider.ofCollection(listaZajec);
-        zajeciaGrid.setDataProvider(provider);
-
-        blokComboBox.addValueChangeListener(event -> {
-            listaZajec.clear();
-            listaZajec.addAll(event.getValue().getZajecia());
-            provider.refreshAll();
-        });
-
-        uzytkownikBlokiLayout.addComponents(blokComboBox, zajeciaGrid);
+        return courseRepository.findAll()
+                .stream()
+                .filter(course -> !requestedCourses.contains(course.getId()))
+                .collect(Collectors.toList());
     }
+
 }
