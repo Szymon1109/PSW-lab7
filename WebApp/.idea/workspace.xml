@@ -4,22 +4,76 @@
     <bookmark url="file://$PROJECT_DIR$/src/main/java/com/example/demo/service/InitializationService.java" line="37" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="947a870f-523d-445d-8209-f3ac80ab0efa" name="Default Changelist" comment="">
+    <list default="true" id="947a870f-523d-445d-8209-f3ac80ab0efa" name="Default Changelist" comment="Deleted LoggedUI class">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/DemoApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/DemoApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/BlokRepozytorium.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/BlokRepozytorium.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/KursRepozytorium.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/KursRepozytorium.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/service/InitializationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/service/InitializationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/ui/LoggedUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/ui/LoggedUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/ui/LoginSignUpUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/ui/LoginSignUpUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/DemoApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/DemoApplication.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/service/InitializationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/InitializationService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/ui/LoggedUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/ui/LoggedUI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/ui/LoginSignUpUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/ui/LoginSignUpUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/ui/AdminView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/view/AdminView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/ui/StartView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/view/StartView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/ui/StudentView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/view/StudentView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/ui/TrainerView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/view/TrainerView.java" afterDir="false" />
     </list>
-    <ignored path="$PROJECT_DIR$/out/" />
-    <ignored path="$PROJECT_DIR$/target/" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <list id="c94ff644-964d-43de-a9a9-99fcebcd3e66" name="Unversioned" comment="Unversioned">
+      <change afterPath="$PROJECT_DIR$/Courses.mv.db" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Courses.trace.db" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/META-INF/WebApp.kotlin_module" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/VAADIN/themes/mytheme/background.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/controller/CourseController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/controller/LessonController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/controller/LessonSeriesController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/controller/MessageController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/controller/RequestController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/controller/UserController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/model/Course.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/model/Lesson.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/model/LessonSeries.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/model/Message.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/model/Request.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/model/User.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/repository/CourseRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/repository/LessonRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/repository/LessonSeriesRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/repository/MessageRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/repository/RequestRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/repository/UserRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/CourseService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/InitService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/LessonSeriesService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/LessonService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/MessageService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/RequestService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/service/UserService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/ui/AdminView.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/ui/StartView.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/ui/StudentView.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/ui/TrainerView.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/util/DataUtils.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/example/demo/util/UserType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/VAADIN/themes/mytheme/styles.scss" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/VAADIN/themes/mytheme/styles.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/DemoApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/DemoApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/model/Blok.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/model/Kurs.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/model/Powiadomienie.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/model/Typ.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/model/Uzytkownik.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/model/Zajecia.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/model/Zgloszenie.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/repository/BlokRepozytorium.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/repository/KursRepozytorium.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/repository/PowiadomienieRepozytorium.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/repository/UzytkownikRepozytorium.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/repository/ZajeciaRepozytorium.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/repository/ZgloszenieRepozytorium.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/service/InitializationService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/ui/LoggedUI.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/ui/LoginSignUpUI.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,9 +81,6 @@
   </component>
   <component name="DefaultGradleProjectSettings">
     <option name="isMigrated" value="true" />
-  </component>
-  <component name="FileEditorManager">
-    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -40,43 +91,42 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>fore</find>
-    </findStrings>
-  </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
-  </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/model/Typ.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/model/User.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/model/Uzytkownik.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/repository/UserRepository.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/repository/RepozytoriumUzytkownika.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/service/InitalizationService.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/ui/LogowanieUI.java" />
-        <option value="$PROJECT_DIR$/src/main/resources/application.properties" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/model/Zajecia.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/repository/UzytkownikRepozytorium.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/model/Powiadomienie.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/model/Blok.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/model/Kurs.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/repository/ZajeciaRepozytorium.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/repository/ZgloszenieRepozytorium.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/model/Zgloszenie.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/repository/PowiadomienieRepozytorium.java" />
-        <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/repository/BlokRepozytorium.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/repository/KursRepozytorium.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/service/InitializationService.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/ui/LoginSignUpUI.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/DemoApplication.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/demo/ui/LoggedUI.java" />
-      </list>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="master" />
+      </map>
     </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="UPDATE_TYPE" value="MERGE" />
+  </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/.idea/workspace.xml">
+      <ranges>
+        <range start1="2" end1="5" start2="2" end2="2" changelist="c94ff644-964d-43de-a9a9-99fcebcd3e66" />
+        <range start1="6" end1="7" start2="3" end2="44" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="8" end1="14" start2="45" end2="46" changelist="c94ff644-964d-43de-a9a9-99fcebcd3e66" />
+        <range start1="15" end1="18" start2="47" end2="66" changelist="c94ff644-964d-43de-a9a9-99fcebcd3e66" />
+        <range start1="19" end1="22" start2="67" end2="67" changelist="c94ff644-964d-43de-a9a9-99fcebcd3e66" />
+        <range start1="30" end1="33" start2="75" end2="75" changelist="c94ff644-964d-43de-a9a9-99fcebcd3e66" />
+        <range start1="42" end1="47" start2="84" end2="84" changelist="c94ff644-964d-43de-a9a9-99fcebcd3e66" />
+        <range start1="48" end1="48" start2="85" end2="90" changelist="c94ff644-964d-43de-a9a9-99fcebcd3e66" />
+        <range start1="49" end1="79" start2="91" end2="92" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="88" end1="93" start2="101" end2="102" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="96" end1="170" start2="105" end2="109" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="172" end1="172" start2="111" end2="116" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="173" end1="175" start2="117" end2="121" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="177" end1="177" start2="123" end2="124" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="183" end1="195" start2="130" end2="134" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="196" end1="197" start2="135" end2="136" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="222" end1="222" start2="161" end2="179" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="229" end1="229" start2="186" end2="187" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="233" end1="233" start2="191" end2="250" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="234" end1="234" start2="251" end2="252" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="245" end1="274" start2="263" end2="265" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+        <range start1="278" end1="649" start2="269" end2="387" changelist="947a870f-523d-445d-8209-f3ac80ab0efa" />
+      </ranges>
+    </file>
   </component>
   <component name="MavenImportPreferences">
     <option name="importingSettings">
@@ -86,115 +136,41 @@
       </MavenImportingSettings>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="951" />
-    <option name="width" value="978" />
-    <option name="height" value="1039" />
-  </component>
+  <component name="ProjectId" id="1jKwsblzOrb2UOwMs8D5QfZohOS" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
-  <component name="ProjectView">
-    <navigator currentView="Scope" currentSubView="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope" proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="ProjectPane" />
-      <pane id="PackagesPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="WebApp" type="58d84e3e:PackageViewProjectNode" />
-              <item name="ZPO-Lab8" type="616d4139:PackageViewModuleNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope">
-        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
-          <expand>
-            <path>
-              <item name="WebApp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="ZPO-Lab8" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-            </path>
-            <path>
-              <item name="WebApp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="ZPO-Lab8" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="WebApp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="ZPO-Lab8" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="WebApp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="ZPO-Lab8" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="java" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="WebApp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="ZPO-Lab8" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="java" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="com" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="WebApp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="ZPO-Lab8" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="java" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="com" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="example" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="WebApp" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="ZPO-Lab8" type="2674bda8:ScopeViewTreeModel$GroupNode" />
-              <item name="src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="main" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="java" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="com" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="example" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-              <item name="demo" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="C:/WebApp (kopia)" />
-    <property name="project.structure.last.edited" value="Problems" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.example.demo.ui" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\szymo\intellij-workspace\PSW-lab7\WebApp\src\main\resources\VAADIN\themes\mytheme" />
+      <recent name="C:\Users\szymo\intellij-workspace\PSW-lab7\WebApp\src\main\resources\static" />
+    </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.DemoApplication">
     <configuration name="WebApp" type="MavenRunConfiguration" factoryName="Maven">
       <MavenSettings>
         <option name="myGeneralSettings" />
@@ -220,6 +196,24 @@
       </MavenSettings>
       <method v="2" />
     </configuration>
+    <configuration name="DemoApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="WebApp" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.demo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.demo.DemoApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.DemoApplication" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -227,11 +221,72 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="947a870f-523d-445d-8209-f3ac80ab0efa" name="Default Changelist" comment="" />
+      <changelist id="c94ff644-964d-43de-a9a9-99fcebcd3e66" name="Unversioned" comment="" />
       <created>1560979746118</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1560979746118</updated>
+      <workItem from="1603566300563" duration="1473000" />
+      <workItem from="1605299552658" duration="45791000" />
+      <workItem from="1605433955355" duration="2329000" />
     </task>
+    <task id="LOCAL-00001" summary="Added request sending by student and changed variable names">
+      <created>1605395523195</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1605395523195</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Changed variable and method names from Polish into English">
+      <created>1605395650584</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1605395650584</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added data utils">
+      <created>1605395690276</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1605395690276</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Added background image">
+      <created>1605395737655</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1605395737655</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Added service classes for all entities">
+      <created>1605395770673</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1605395770673</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Added rest controller classes for all entities">
+      <created>1605395796575</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1605395796575</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Split one UI for logged user into many views for every type of user">
+      <created>1605397482062</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1605397482062</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Deleted LoggedUI class">
+      <created>1605436048043</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1605436048043</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TodoView">
@@ -243,409 +298,129 @@
       <is-autoscroll-to-source value="true" />
     </todo-panel>
   </component>
-  <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18993288" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Image Layers" order="2" />
-      <window_info id="Designer" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Capture Tool" order="5" />
-      <window_info id="Favorites" order="6" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.3286119" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4986577" weight="0.28186968" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.3286119" />
-      <window_info anchor="bottom" id="Terminal" order="7" />
-      <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.5013423" side_tool="true" weight="0.407932" />
-      <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="right" id="Maven" order="4" />
-      <window_info anchor="right" id="Theme Preview" order="5" />
-      <window_info anchor="right" id="Capture Analysis" order="6" />
-      <window_info anchor="right" id="Palette&#9;" order="7" />
-    </layout>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.md" />
   </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Sprint.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Task.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/UserRepository.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/TaskRepository.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/ProjectRepository.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/SprintRepository.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/User.java" />
-    <entry file="file://$PROJECT_DIR$/test.iml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mvnw.cmd">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2316" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/manifest.mf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="34" lean-forward="true" selection-start-line="1" selection-start-column="34" selection-end-line="1" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/HELP.md">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/demo.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="33" lean-forward="true" selection-start-line="6" selection-start-column="33" selection-end-line="6" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/compiler.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/encodings.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/uiDesigner.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1552" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/vcs.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-11786">
-          <caret line="2" column="36" lean-forward="true" selection-start-line="2" selection-start-column="36" selection-end-line="2" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/vaadin/vaadin-spring/3.1.1/vaadin-spring-3.1.1.jar!/com/vaadin/spring/server/SpringUIProvider.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="283">
-          <caret line="81" selection-start-line="81" selection-end-line="81" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/VAADIN/themes/mytheme/addons.scss">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/VAADIN/themes/mytheme/styles.scss">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/VAADIN/themes/mytheme/mytheme.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="141">
-          <caret line="28" column="43" lean-forward="true" selection-start-line="28" selection-start-column="43" selection-end-line="28" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/VAADIN/themes/mytheme/favicon.ico">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/service/InitService.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Progress.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Project.java" />
-    <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.3.10.Final/hibernate-core-5.3.10.Final.jar!/org/hibernate/collection/internal/AbstractPersistentCollection.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="216" lean-forward="true" selection-start-line="216" selection-end-line="216" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/ProjectParticipation.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/ProjectParticipationRepository.java" />
-    <entry file="file://$PROJECT_DIR$/mvnw">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="148">
-          <caret line="116" column="4" selection-start-line="116" selection-start-column="4" selection-end-line="116" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Blok.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="18" column="25" lean-forward="true" selection-start-line="18" selection-start-column="25" selection-end-line="18" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Powiadomienie.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" lean-forward="true" selection-start-line="19" selection-end-line="19" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Typ.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="12" selection-start-line="2" selection-start-column="12" selection-end-line="2" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Uzytkownik.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="25" lean-forward="true" selection-start-line="20" selection-start-column="25" selection-end-line="20" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Zajecia.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="34" lean-forward="true" selection-start-line="22" selection-start-column="34" selection-end-line="22" selection-end-column="34" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Zgloszenie.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="29" lean-forward="true" selection-start-line="16" selection-start-column="29" selection-end-line="16" selection-end-column="29" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="18" column="46" lean-forward="true" selection-start-line="18" selection-start-column="46" selection-end-line="18" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/PowiadomienieRepozytorium.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/KursRepozytorium.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="4" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/UzytkownikRepozytorium.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="33" lean-forward="true" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/ZajeciaRepozytorium.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="61" lean-forward="true" selection-start-line="12" selection-start-column="61" selection-end-line="12" selection-end-column="61" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/ZgloszenieRepozytorium.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/model/Kurs.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/ui/LoginSignUpUI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="680">
-          <caret line="40" column="32" lean-forward="true" selection-start-line="40" selection-start-column="32" selection-end-line="40" selection-end-column="32" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/DemoApplication.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="5" lean-forward="true" selection-start-line="11" selection-start-column="5" selection-end-line="11" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/ui/LoggedUI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8789">
-          <caret line="517" column="57" selection-start-line="517" selection-start-column="57" selection-end-line="517" selection-end-column="57" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/repository/BlokRepozytorium.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="4" selection-start-line="11" selection-start-column="4" selection-end-line="11" selection-end-column="4" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/demo/service/InitializationService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="42" column="82" lean-forward="true" selection-start-line="42" selection-start-column="82" selection-end-line="42" selection-end-column="82" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
-  <component name="masterDetails">
-    <states>
-      <state key="ArtifactsStructureConfigurable.UI">
-        <settings>
-          <artifact-editor />
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="FacetStructureConfigurable.UI">
-        <settings>
-          <last-edited>No facets are configured</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="GlobalLibrariesConfigurable.UI">
-        <settings>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="JdkListConfigurable.UI">
-        <settings>
-          <last-edited>10</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ModuleStructureConfigurable.UI">
-        <settings>
-          <last-edited>ZPO-Lab8</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-                <option value="0.6" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ProjectJDKs.UI">
-        <settings>
-          <last-edited>10</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.10940919" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ProjectLibrariesConfigurable.UI">
-        <settings>
-          <last-edited>Maven: antlr:antlr:2.7.7</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-    </states>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added request sending by student and changed variable names" />
+    <MESSAGE value="Changed variable and method names from Polish into English" />
+    <MESSAGE value="Added data utils" />
+    <MESSAGE value="Added background image" />
+    <MESSAGE value="Added service classes for all entities" />
+    <MESSAGE value="Added rest controller classes for all entities" />
+    <MESSAGE value="Split one UI for logged user into many views for every type of user" />
+    <MESSAGE value="Deleted LoggedUI class" />
+    <option name="LAST_COMMIT_MESSAGE" value="Deleted LoggedUI class" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="154" y="22" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1605435688249">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="-1229" y="19" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824/-1366.0.1366.728@-1366.0.1366.728" timestamp="1603566395513" />
+    <state x="154" y="22" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1605435688249" />
+    <state x="566" y="272" width="403" height="287" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1605396006933">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="566" y="272" width="403" height="287" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1536.824@0.0.1536.824" timestamp="1605396006933" />
+    <state x="253" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1605372596712">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="253" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1536.824@0.0.1536.824" timestamp="1605372596712" />
+    <state x="777" y="186" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1605308788134">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="777" y="186" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1536.824@0.0.1536.824" timestamp="1605308788134" />
+    <state x="318" y="7" key="CommitChangelistDialog2" timestamp="1605436268275">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="318" y="7" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1605436268275" />
+    <state width="500" height="466" key="DebuggerActiveHint" timestamp="1605361406616">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="500" height="466" key="DebuggerActiveHint/0.0.1536.824@0.0.1536.824" timestamp="1605361406616" />
+    <state x="93" y="93" width="1350" height="638" key="DiffContextDialog" timestamp="1605435998792">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="93" y="93" width="1350" height="638" key="DiffContextDialog/0.0.1536.824@0.0.1536.824" timestamp="1605435998792" />
+    <state width="1493" height="295" key="GridCell.Tab.0.bottom" timestamp="1605436433386">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1323" height="253" key="GridCell.Tab.0.bottom/0.0.1536.824/-1366.0.1366.728@-1366.0.1366.728" timestamp="1603575946312" />
+    <state width="1493" height="295" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1605436433386" />
+    <state width="1493" height="295" key="GridCell.Tab.0.center" timestamp="1605436433385">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1323" height="253" key="GridCell.Tab.0.center/0.0.1536.824/-1366.0.1366.728@-1366.0.1366.728" timestamp="1603575946311" />
+    <state width="1493" height="295" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1605436433385" />
+    <state width="1493" height="295" key="GridCell.Tab.0.left" timestamp="1605436433385">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1323" height="253" key="GridCell.Tab.0.left/0.0.1536.824/-1366.0.1366.728@-1366.0.1366.728" timestamp="1603575946311" />
+    <state width="1493" height="295" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1605436433385" />
+    <state width="1493" height="295" key="GridCell.Tab.0.right" timestamp="1605436433385">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1323" height="253" key="GridCell.Tab.0.right/0.0.1536.824/-1366.0.1366.728@-1366.0.1366.728" timestamp="1603575946312" />
+    <state width="1493" height="295" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1605436433385" />
+    <state width="1493" height="295" key="GridCell.Tab.1.bottom" timestamp="1605436433386">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="295" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1605436433386" />
+    <state width="1493" height="295" key="GridCell.Tab.1.center" timestamp="1605436433386">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="295" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1605436433386" />
+    <state width="1493" height="295" key="GridCell.Tab.1.left" timestamp="1605436433386">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="295" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1605436433386" />
+    <state width="1493" height="295" key="GridCell.Tab.1.right" timestamp="1605436433386">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="295" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1605436433386" />
+    <state x="299" y="67" key="Maven.ArtifactSearchDialog" timestamp="1605311361492">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="299" y="67" key="Maven.ArtifactSearchDialog/0.0.1536.824@0.0.1536.824" timestamp="1605311361492" />
+    <state x="-1203" y="0" key="SettingsEditor" timestamp="1603566347534">
+      <screen x="-1366" y="0" width="1366" height="728" />
+    </state>
+    <state x="-1203" y="0" key="SettingsEditor/0.0.1536.824/-1366.0.1366.728@-1366.0.1366.728" timestamp="1603566347534" />
+    <state x="596" y="328" key="VCS.ChangelistChooser" timestamp="1605436101077">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="596" y="328" key="VCS.ChangelistChooser/0.0.1536.824@0.0.1536.824" timestamp="1605436101077" />
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2" timestamp="1605436149889">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1605436149889" />
+    <state x="578" y="329" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1605436256222">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="578" y="329" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.824@0.0.1536.824" timestamp="1605436256222" />
+    <state x="463" y="144" width="834" height="543" key="find.popup" timestamp="1605435302673">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="463" y="144" width="834" height="543" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1605435302673" />
+    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup" timestamp="1605435292679">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup/0.0.1536.824@0.0.1536.824" timestamp="1605435292679" />
   </component>
 </project>

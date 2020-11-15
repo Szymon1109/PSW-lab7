@@ -1,4 +1,4 @@
-package com.example.demo.ui;
+package com.example.demo.view;
 
 import com.example.demo.model.*;
 import com.example.demo.repository.*;

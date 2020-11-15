@@ -1,4 +1,4 @@
-package com.example.demo.ui;
+package com.example.demo.view;
 
 import com.example.demo.util.UserType;
 import com.example.demo.model.User;
