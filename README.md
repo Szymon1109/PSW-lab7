@@ -1,7 +1,10 @@
-# PSW-lab7
-Laboratorium nr 7: WEB APP   
-## Autorzy:
-```
-Mateusz Balcer
-Szymon Betlewski
-```
+# Projektowanie serwisów sieciowych
+Aplikacja webowa do zarządzania szkoleniami (kursami)  
+## Technologie
+- Spring Boot
+- Spring Data JPA
+- Vaadin Framework
+- Lombok
+- H2
+## Autor
+<a href="https://github.com/betlewski"> Szymon Betlewski </a>
